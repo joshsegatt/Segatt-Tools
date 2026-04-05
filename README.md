@@ -1,48 +1,63 @@
-# 🪐 Segatt Tools — Elite System Utility
+# 🪐 Segatt Tools — Elite Windows System Utility
 
-O **Segatt Tools** é uma alternativa premium e de alta performance ao CTT Winutil, construída com **Tauri v2**, **Next.js** e **Rust**. Projetado para usuários que exigem o máximo de estética e eficiência em seu ambiente Windows.
+[![GitHub Release](https://img.shields.io/github/v/release/joshsegatt/Segatt-Tools?style=for-the-badge&color=2eb67d)](https://github.com/joshsegatt/Segatt-Tools/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/joshsegatt/Segatt-Tools/build.yml?style=for-the-badge&label=Build)](https://github.com/joshsegatt/Segatt-Tools)
+[![Direct Install](https://img.shields.io/badge/Install-PowerShell-blue?style=for-the-badge&logo=powershell)](https://github.com/joshsegatt/Segatt-Tools#-instalação-rápida)
 
-![Segatt Tools Preview](https://placehold.co/1200x600/101010/FFFFFF?text=Segatt+Tools+Elite+UI)
+O **Segatt Tools** é uma suite de utilitários premium construída com o estado da arte das tecnologias modernas (**Tauri v2**, **Next.js 15** e **Rust**). Projetado para ser a versão definitiva em performance e estética para o gerenciamento de sistemas Windows.
 
-## 💎 Destaques
+---
 
-- **Elite UI/UX**: Interface inspirada em sistemas de alta fidelidade (Glassmorphism, OKLCH Colors, Fluid Typography).
-- **Gerenciador de Aplicativos**: Instale os softwares essenciais via WinGet com streaming de logs em tempo real.
-- **Tweak Engine**: Otimizações profundas de registro e sistema com criação automática de pontos de restauração.
-- **Segatt AI Assistant**: Inteligência local que diagnóstica seu hardware e sugere melhorias específicas para sua máquina.
-- **Segurança Admin**: Verificação ativa de privilégios para garantir que cada ajuste seja aplicado com sucesso.
+### 🚀 Instalação Rápida (One-Liner)
 
-## 🚀 Como Executar
+Copie e cole este comando no seu **PowerShell (Admin)** para instalar o Segatt Tools instantaneamente:
 
-### Pré-requisitos
-- **Rust**: [Instalar Rust](https://rustup.rs/)
-- **Node.js**: [Instalar Node.js](https://nodejs.org/)
-- **WebView2**: Nativo no Windows 10/11.
-
-### Desenvolvimento
-```bash
-# Instalar dependências
-npm install
-
-# Rodar em modo desenvolvimento
-npm run tauri dev
+```powershell
+iex (irm https://raw.githubusercontent.com/joshsegatt/Segatt-Tools/main/install.ps1)
 ```
 
-### Build de Produção
+---
+
+## 💎 Diferenciais Elite
+
+Diferente de scripts genéricos, o Segatt Tools foca em **segurança, estética "Figma-grade" e performance nativa**.
+
+| Feature | Descrição | Tecnologia |
+| :--- | :--- | :--- |
+| **Streaming UI** | Logs do WinGet em tempo real com interface interativa. | Tauri Event Bus |
+| **Tweak Engine** | Otimizações profundas com backups automáticos. | Windows API (Rust) |
+| **Local AI Assist** | Diagnóstico de hardware por inteligência artificial local. | Llama 3 / Sidecar |
+| **Zero Telemetry** | Privacidade absoluta. Nada sai da sua máquina. | Local-Only Processing |
+
+## 🛠️ Arquitetura de Produção
+
+O projeto utiliza um design system baseado em **Glassmorphism** e **Fluid Typography**, garantindo que a aplicação pareça nativa no Windows 11 enquanto mantém uma identidade visual única e moderna.
+
+### Estrutura do Projeto
+- **`src-tauri/`**: Núcleo de alta performance em Rust para interações com o Win32 API.
+- **`src/features/`**: Componentização modular seguindo padrões da Vercel/Linear.
+- **`src/app/`**: Roteamento otimizado com Next.js App Router.
+
+## 🏗️ Desenvolvimento
+
+Se você deseja contribuir ou compilar manualmente:
+
 ```bash
-# Gerar o instalador (.msi / .exe)
+# 1. Instalar dependências
+npm install
+
+# 2. Iniciar ambiente de desenvolvimento
+npm run tauri dev
+
+# 3. Gerar build de produção
 npm run tauri build
 ```
 
-## 🏗️ Arquitetura
+---
 
-O projeto segue um padrão **Feature-First**:
-- `src-tauri/src/features/`: Lógica de baixo nível em Rust (Packages, Tweaks, AI).
-- `src/features/`: Componentes React organizados por funcionalidade.
-- `src/app/`: Roteamento Next.js (App Router).
+## 🛡️ Segurança e Integridade
 
-## 🛡️ Privacidade
-O Segatt Tools processa **todos** os dados localmente. Nenhuma telemetria ou dado de diagnóstico sai da sua máquina. O assistente de IA utiliza um motor local (Sidecar) para garantir que sua privacidade nunca seja comprometida.
+Todas as alterações de sistema realizadas pelo Segatt Tools são auditáveis e o código é 100% aberto. Recomendamos a criação de um ponto de restauração antes de aplicar Tweaks agressivos (funcionalidade integrada).
 
 ---
-*Desenvolvido por Google DeepMind Team & Segatt Soft.*
+*Desenvolvido com ❤️ por Segatt Soft & Google DeepMind Team.*
