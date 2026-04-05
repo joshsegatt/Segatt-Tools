@@ -4,18 +4,10 @@ import React, { useState } from "react";
 import { 
   Download, 
   CheckCircle2, 
-  ExternalLink, 
   Plus, 
   Minus,
   Package as PackageIcon
 } from "lucide-react";
-
-interface PackageInfo {
-  name: String;
-  id: String;
-  version: String;
-  source: String;
-}
 
 interface PackageCardProps {
   pkg: any;
@@ -25,50 +17,53 @@ interface PackageCardProps {
 }
 
 export const PackageCard = ({ pkg, onInstall, onSelect, isSelected }: PackageCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div 
-      className={`
-        glass p-6 rounded-2xl transition-all duration-300 relative group
-        ${isSelected ? "border-accent-primary bg-accent-primary/5 shadow-lg" : "hover:bg-white/5"}
-        ${isHovered ? "-translate-y-1" : ""}
-      `}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`card-elite ${isSelected ? "selected" : ""}`}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-soft)',
+        backgroundColor: isSelected ? 'oklch(65% 0.22 260 / 0.05)' : 'var(--bg-surface)'
+      }}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-3 rounded-xl bg-white/5 text-accent-primary group-hover:scale-110 transition-transform duration-300">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', background: 'var(--border-subtle)', color: 'var(--accent-primary)' }}>
           <PackageIcon size={24} />
         </div>
         <button 
           onClick={() => onSelect(pkg)}
-          className={`
-            p-2 rounded-lg transition-all duration-200
-            ${isSelected ? "bg-accent-primary text-white" : "bg-white/5 text-text-muted hover:text-white"}
-          `}
+          style={{ 
+            padding: '8px', 
+            borderRadius: 'var(--radius-sm)', 
+            background: isSelected ? 'var(--accent-primary)' : 'var(--border-subtle)',
+            color: isSelected ? 'white' : 'var(--text-muted)'
+          }}
         >
           {isSelected ? <Minus size={16} /> : <Plus size={16} />}
         </button>
       </div>
 
-      <div className="space-y-1">
-        <h3 className="font-display font-bold text-lg truncate pr-2 group-hover:text-accent-primary transition-colors">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {pkg.name}
         </h3>
-        <p className="text-xs text-text-muted font-mono tracking-tighter truncate">
+        <p className="text-label" style={{ fontSize: '10px', textTransform: 'none', letterSpacing: '0' }}>
           ID: {pkg.id}
         </p>
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-widest text-text-muted font-bold">Versão</span>
-          <span className="text-sm font-medium text-text-secondary">{pkg.version}</span>
+      <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span className="text-label" style={{ fontSize: '9px' }}>Versão</span>
+          <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-secondary)' }}>{pkg.version}</span>
         </div>
         <button 
           onClick={(e) => { e.stopPropagation(); onInstall(pkg.id); }}
-          className="p-2 rounded-lg bg-accent-primary/10 text-accent-primary hover:bg-accent-primary hover:text-white transition-all duration-300"
+          className="button-primary"
+          style={{ padding: '8px', borderRadius: 'var(--radius-sm)' }}
           title="Instalar Agora"
         >
           <Download size={18} />
@@ -76,10 +71,8 @@ export const PackageCard = ({ pkg, onInstall, onSelect, isSelected }: PackageCar
       </div>
 
       {isSelected && (
-        <div className="absolute -top-1 -right-1">
-          <div className="bg-accent-primary p-1 rounded-full text-white shadow-xl">
-            <CheckCircle2 size={12} />
-          </div>
+        <div style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--accent-primary)', color: 'white', borderRadius: '50%', padding: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+          <CheckCircle2 size={12} />
         </div>
       )}
     </div>

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { 
   Zap, 
-  Shield, 
   CheckCircle2, 
   Loader2,
   RotateCcw,
@@ -49,7 +48,6 @@ export default function TweaksPage() {
     init();
   }, []);
 
-  // Auto-dismiss notifications
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => setNotification(null), 5000);
@@ -103,52 +101,55 @@ export default function TweaksPage() {
   const filteredTweaks = allTweaks.filter(t => t.category === activeCategory);
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-700 pb-32">
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-accent-primary uppercase tracking-[0.2em] text-[10px] font-bold">
+    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '48px', paddingBottom: '120px' }}>
+      <header style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', fontSize: '10px' }}>
             <Zap size={14} />
             <span>Optimization Engine v2.0</span>
           </div>
-          <h1 className="hero-title mb-0">Ajustes de Sistema</h1>
-          <p className="text-text-secondary max-w-lg">
-            Modificações de baixo nível para máxima performance. Execute como Administrador para total eficácia.
+          <h1 className="hero-title" style={{ marginBottom: 0 }}>Ajustes de Sistema</h1>
+          <p className="hero-description" style={{ marginBottom: 0 }}>
+            Modificações de baixo nível para máxima performance. Execute como Admin para total eficácia.
           </p>
         </div>
 
         <button 
           onClick={handleCreateRestorePoint}
-          disabled={isLoading}
-          className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-soft rounded-2xl hover:bg-white/10 transition-all text-sm font-semibold group disabled:opacity-50"
+          className="glass"
+          style={{ padding: '12px 24px', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.85rem', fontWeight: '600' }}
         >
-          <RotateCcw size={16} className="group-hover:rotate-180 transition-transform duration-700" />
-          Segurança: Ponto de Restauração
+          <RotateCcw size={16} /> Segurança: Ponto de Restauração
         </button>
       </header>
 
-      {/* Admin Warning Banner */}
       {isAdmin === false && (
-        <div className="glass p-5 rounded-3xl border-accent-error/20 bg-accent-error/5 flex items-center gap-4 animate-in slide-in-from-top-4">
-          <div className="p-3 bg-accent-error/20 rounded-2xl text-accent-error">
+        <div className="glass" style={{ padding: '20px', borderRadius: 'var(--radius-xl)', borderColor: 'rgba(255, 50, 50, 0.2)', backgroundColor: 'rgba(255, 50, 50, 0.05)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ background: 'rgba(255, 50, 50, 0.1)', padding: '12px', borderRadius: 'var(--radius-md)', color: 'oklch(60% 0.15 20)' }}>
             <ShieldAlert size={24} />
           </div>
-          <div className="space-y-1">
-            <h4 className="font-bold text-sm">Privilégios Insuficientes</h4>
-            <p className="text-xs text-text-muted">Alguns tweaks de registro requerem permissão de Administrador para serem aplicados.</p>
+          <div>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: '700' }}>Privilégios Insuficientes</h4>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Alguns tweaks requerem permissão de Administrador para serem aplicados.</p>
           </div>
         </div>
       )}
 
       {/* Category Tabs */}
-      <nav className="flex flex-wrap gap-2 p-1.5 glass rounded-2xl w-fit">
+      <nav className="glass" style={{ padding: '6px', borderRadius: 'var(--radius-md)', display: 'flex', gap: '8px', width: 'fit-content' }}>
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`
-              px-6 py-2.5 rounded-xl text-sm font-bold transition-all
-              ${activeCategory === cat ? "bg-accent-primary text-white shadow-xl" : "text-text-muted hover:text-text-secondary"}
-            `}
+            style={{
+              padding: '10px 24px',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.85rem',
+              fontWeight: '700',
+              background: activeCategory === cat ? 'var(--accent-primary)' : 'transparent',
+              color: activeCategory === cat ? 'white' : 'var(--text-muted)',
+              transition: 'all 0.2s'
+            }}
           >
             {cat}
           </button>
@@ -156,10 +157,10 @@ export default function TweaksPage() {
       </nav>
 
       {/* Content Area */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid-auto">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-32 rounded-2xl bg-white/5 animate-pulse border border-soft" />
+            <div key={i} className="card-elite" style={{ height: '160px', opacity: 0.3 }} />
           ))
         ) : (
           filteredTweaks.map((tweak) => (
@@ -173,48 +174,57 @@ export default function TweaksPage() {
         )}
       </div>
 
-      {/* Feedback Notifications */}
-      {notification && (
-        <div className={`
-          fixed top-8 right-8 z-[100] glass p-4 rounded-2xl border flex items-center gap-4 animate-in slide-in-from-right-10 shadow-2xl
-          ${notification.type === "success" ? "border-accent-primary/20 text-accent-primary" : 
-            notification.type === "info" ? "border-white/20 text-text-primary" : "border-accent-error/20 text-accent-error"}
-        `}>
-          {notification.type === "success" ? <CheckCircle2 size={20} /> : 
-           notification.type === "info" ? <Info size={20} /> : <AlertTriangle size={20} />}
-          <span className="text-sm font-bold">{notification.message}</span>
-        </div>
-      )}
-
       {/* Global Processing Bar */}
       {selectedIds.length > 0 && (
-        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 glass p-6 rounded-3xl border-accent-primary/30 shadow-[0_0_80px_rgba(100,150,255,0.15)] flex items-center gap-12 z-50 animate-in slide-in-from-bottom-10">
-          <div className="space-y-1">
-            <h4 className="font-bold text-lg">{selectedIds.length} Alterações Planejadas</h4>
-            <div className="flex gap-1.5">
-              {selectedIds.slice(0, 3).map(id => (
-                <div key={id} className="w-1.5 h-1.5 rounded-full bg-accent-primary" />
-              ))}
-              {selectedIds.length > 3 && <span className="text-[10px] text-text-muted">...</span>}
-            </div>
+        <div className="glass fade-in" style={{ 
+          position: 'fixed', 
+          bottom: '48px', 
+          left: '50%', 
+          transform: 'translateX(-50%)', 
+          padding: '24px 40px', 
+          borderRadius: 'var(--radius-2xl)', 
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '40px',
+          boxShadow: '0 30px 100px rgba(100, 150, 255, 0.2)',
+          borderColor: 'var(--accent-primary)'
+        }}>
+          <div>
+            <h4 style={{ fontWeight: '700', fontSize: '1.1rem' }}>{selectedIds.length} Alterações Planejadas</h4>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Revise antes de executar modificações no registro.</p>
           </div>
 
-          <div className="flex gap-4">
+          <div style={{ display: 'flex', gap: '16px' }}>
             <button 
               onClick={() => setSelectedIds([])}
-              className="px-6 py-3 rounded-xl border border-soft hover:bg-white/5 transition-all text-sm font-semibold"
+              style={{ padding: '12px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-soft)', fontSize: '0.85rem', fontWeight: '600' }}
             >
               Descartar
             </button>
             <button 
               onClick={handleApplyTweaks}
               disabled={isApplying}
-              className="button-primary flex items-center gap-3 px-10 py-3 !rounded-xl !animate-none disabled:opacity-50 font-bold group"
+              className="button-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 40px' }}
             >
               {isApplying ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} />}
               Executar Modificações
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Notifications */}
+      {notification && (
+        <div className="glass fade-in" style={{ 
+          position: 'fixed', top: '32px', right: '32px', zIndex: 2000, padding: '16px 24px', borderRadius: 'var(--radius-xl)', display: 'flex', alignItems: 'center', gap: '16px',
+          borderColor: notification.type === 'success' ? 'var(--accent-primary)' : 'rgba(255,50,50,0.3)',
+          color: notification.type === 'success' ? 'var(--accent-primary)' : 'oklch(60% 0.15 20)'
+        }}>
+          {notification.type === "success" ? <CheckCircle2 size={20} /> : 
+           notification.type === "info" ? <Info size={20} /> : <AlertTriangle size={20} />}
+          <span style={{ fontWeight: '700', fontSize: '0.85rem' }}>{notification.message}</span>
         </div>
       )}
     </div>

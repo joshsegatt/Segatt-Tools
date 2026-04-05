@@ -82,31 +82,40 @@ export default function AppsPage() {
   };
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-accent-primary uppercase tracking-[0.2em] text-[10px] font-bold">
+    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+      <header style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', fontSize: '10px' }}>
             <Package size={14} />
             <span>Infraestrutura de Software</span>
           </div>
-          <h1 className="hero-title mb-0">Loja de Apps</h1>
-          <p className="text-text-secondary max-w-lg">
+          <h1 className="hero-title" style={{ marginBottom: 0 }}>Loja de Apps</h1>
+          <p className="hero-description" style={{ marginBottom: 0 }}>
             Sua central de ferramentas de elite. Pesquisa e instalação ultra-rápida via WinGet.
           </p>
         </div>
 
-        <form onSubmit={handleSearch} className="relative w-full md:w-96 group">
+        <form onSubmit={handleSearch} style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
           <input 
             type="text" 
-            placeholder="Ex: Discord, Brave, VS Code..."
+            placeholder="Ex: Discord, Brave..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full bg-white/5 border border-soft rounded-2xl px-6 py-4 outline-none focus:border-accent-primary focus:bg-white/10 transition-all font-medium text-sm pr-12 group-hover:bg-white/10"
+            style={{ 
+              width: '100%', 
+              background: 'var(--bg-surface)', 
+              border: '1px solid var(--border-soft)', 
+              borderRadius: 'var(--radius-lg)', 
+              padding: '16px 24px', 
+              color: 'white', 
+              outline: 'none',
+              fontSize: '0.9rem'
+            }}
           />
           <button 
             type="submit" 
             disabled={isLoading}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-accent-primary transition-colors disabled:opacity-50"
+            style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
           >
             {isLoading ? <Loader2 className="animate-spin" size={18} /> : <Search size={18} />}
           </button>
@@ -115,53 +124,48 @@ export default function AppsPage() {
 
       {/* Cart Container */}
       {selectedApps.length > 0 && (
-        <div className="glass p-6 rounded-3xl border-accent-primary/20 flex flex-wrap items-center justify-between gap-4 animate-in slide-in-from-top-4 shadow-[0_0_50px_rgba(100,150,255,0.08)]">
-          <div className="flex items-center gap-6">
-            <div className="bg-accent-primary/20 p-4 rounded-2xl text-accent-primary">
+        <div className="glass" style={{ padding: '24px', borderRadius: 'var(--radius-xl)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <div style={{ background: 'oklch(65% 0.22 260 / 0.1)', padding: '16px', borderRadius: 'var(--radius-md)', color: 'var(--accent-primary)' }}>
               <ShoppingCart size={24} />
             </div>
-            <div className="space-y-1">
-              <h2 className="font-bold text-lg">{selectedApps.length} Apps na fila</h2>
-              <p className="text-xs text-text-muted">Pronto para instalação em massa.</p>
+            <div>
+              <h2 style={{ fontWeight: '700', fontSize: '1.1rem' }}>{selectedApps.length} Aplicativos selecionados</h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pronto para instalação em massa.</p>
             </div>
           </div>
           
-          <div className="flex gap-4">
+          <div style={{ display: 'flex', gap: '16px' }}>
             <button 
               onClick={() => setSelectedApps([])}
-              className="px-6 py-3 rounded-xl border border-soft text-text-secondary hover:bg-white/5 transition-all text-sm font-semibold flex items-center gap-2"
+              style={{ padding: '12px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-soft)', fontSize: '0.85rem', fontWeight: '600' }}
             >
-              <Trash2 size={16} /> Limpar
+              Limpar
             </button>
             <button 
               onClick={bulkInstall}
               disabled={isInstalling}
-              className="button-primary flex items-center gap-2 px-8 py-3 !rounded-xl disabled:opacity-50 disabled:cursor-not-allowed group"
+              className="button-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              Iniciar Instalação {isInstalling ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+              Instalar Agora {isInstalling && <Loader2 size={18} className="animate-spin" />}
             </button>
           </div>
         </div>
       )}
 
       {/* Results Section */}
-      <div className="min-h-[400px]">
+      <div style={{ minHeight: '400px' }}>
         {error ? (
-          <div className="flex flex-col items-center justify-center p-20 border border-soft rounded-3xl bg-white/[0.02] text-center space-y-4">
-            <AlertCircle size={40} className="text-accent-error opacity-50" />
-            <div className="space-y-1">
-              <p className="font-semibold text-text-secondary">{error}</p>
-              <p className="text-sm text-text-muted">Tente um termo diferente ou verifique sua conexão.</p>
-            </div>
-            <button 
-              onClick={() => handleSearch()}
-              className="flex items-center gap-2 text-accent-primary text-sm font-bold hover:underline"
-            >
-              <RefreshCw size={14} /> Tentar novamente
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '80px', border: '1px solid var(--border-soft)', borderRadius: 'var(--radius-xl)', background: 'var(--bg-surface)', textAlign: 'center', gap: '16px' }}>
+            <AlertCircle size={40} style={{ color: 'oklch(60% 0.15 20)', opacity: 0.5 }} />
+            <p style={{ fontWeight: '600' }}>{error}</p>
+            <button onClick={() => handleSearch()} style={{ color: 'var(--accent-primary)', fontSize: '0.9rem', fontWeight: '700' }}>
+              Tentar novamente
             </button>
           </div>
         ) : packages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid-auto">
             {packages.map((pkg) => (
               <PackageCard 
                 key={pkg.id} 
@@ -173,10 +177,10 @@ export default function AppsPage() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-soft rounded-[2.5rem] opacity-40">
-            <Package size={64} className="mb-6 text-text-muted" />
-            <h3 className="text-xl font-display font-medium text-text-secondary">Aguardando seu comando</h3>
-            <p className="text-sm text-text-muted mt-2">Pesquise por qualquer software no topo da página.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 0', border: '2px dashed var(--border-soft)', borderRadius: 'var(--radius-xl)', opacity: 0.4 }}>
+            <Package size={64} style={{ marginBottom: '24px', color: 'var(--text-muted)' }} />
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '500' }}>Aguardando comando</h3>
+            <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Pesquise por softwares no campo superior</p>
           </div>
         )}
       </div>

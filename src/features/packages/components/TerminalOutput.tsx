@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Terminal as TerminalIcon, XCircle, Loader2 } from "lucide-react";
+import { Terminal as TerminalIcon, XCircle } from "lucide-react";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
 export const TerminalOutput = () => {
@@ -13,7 +13,6 @@ export const TerminalOutput = () => {
     let unlisten: UnlistenFn | null = null;
     let isMounted = true;
 
-    // Auditoria: Garantir que o unlisten seja chamado corretamente no Tauri v2
     const setupListener = async () => {
       try {
         const handler = await listen<string>("winget-output", (event) => {
@@ -45,15 +44,27 @@ export const TerminalOutput = () => {
   if (!isVisible && logs.length === 0) return null;
 
   return (
-    <div className="fixed bottom-8 right-8 w-[450px] glass rounded-xl shadow-2xl overflow-hidden border border-accent/30 z-50 animate-in slide-in-from-bottom-5">
-      <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-soft">
-        <div className="flex items-center gap-2">
-          <TerminalIcon size={14} className="text-accent-primary" />
-          <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">Console do Sistema</span>
+    <div 
+      className="glass fade-in" 
+      style={{ 
+        position: 'fixed', 
+        bottom: '32px', 
+        right: '32px', 
+        width: '450px', 
+        borderRadius: 'var(--radius-lg)', 
+        overflow: 'hidden', 
+        zIndex: 1000,
+        boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border-soft)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <TerminalIcon size={14} style={{ color: 'var(--accent-primary)' }} />
+          <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)' }}>Log de Instalação</span>
         </div>
         <button 
           onClick={() => { setLogs([]); setIsVisible(false); }}
-          className="text-text-muted hover:text-white transition-colors"
+          style={{ opacity: 0.5 }}
         >
           <XCircle size={14} />
         </button>
@@ -61,14 +72,24 @@ export const TerminalOutput = () => {
 
       <div 
         ref={scrollRef}
-        className="h-64 p-4 font-mono text-[11px] overflow-y-auto bg-black/40 text-text-secondary leading-relaxed scrollbar-thin"
+        style={{ 
+          height: '240px', 
+          padding: '16px', 
+          fontFamily: 'monospace', 
+          fontSize: '11px', 
+          overflowY: 'auto', 
+          background: 'rgba(0,0,0,0.4)', 
+          color: 'var(--text-secondary)',
+          lineHeight: '1.6'
+        }}
       >
         {logs.map((log, i) => (
-          <div key={i} className="mb-1 break-words">
-            <span className="text-accent-primary mr-2">➜</span>
+          <div key={i} style={{ marginBottom: '4px', wordBreak: 'break-all' }}>
+            <span style={{ color: 'var(--accent-primary)', marginRight: '8px' }}>➜</span>
             {log}
           </div>
         ))}
+        {logs.length === 0 && <div style={{ color: 'var(--text-muted)' }}>Aguardando saída do WinGet...</div>}
       </div>
     </div>
   );

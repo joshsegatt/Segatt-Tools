@@ -25,13 +25,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${outfit.variable}`}>
-      <body className="app-body">
-        <Sidebar />
-        <main className="main-content">
-          <div className="max-container">
-            {children}
-          </div>
-        </main>
+      <body>
+        <div className="app-wrapper">
+          <Sidebar />
+          <main className="main-content">
+            <div className="max-container">
+              {children}
+            </div>
+          </main>
+        </div>
       </body>
     </html>
   );
