@@ -1,6 +1,6 @@
 {
   "productName": "Segatt Tools",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "identifier": "com.segatt.tools",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "Segatt Tools v1.5.2 — Elite System Utility",
+        "title": "Segatt Tools v1.5.3 — Elite System Utility",
         "width": 1200,
         "height": 800,
         "resizable": true,

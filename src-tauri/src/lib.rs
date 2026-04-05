@@ -7,18 +7,23 @@ use crate::features::cleaner::run_cleanup;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  tauri::Builder::default()
-    .setup(|app| {
-        app.handle().plugin(tauri_plugin_opener::init())?;
-        app.handle().plugin(tauri_plugin_shell::init())?;
-        app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
-        if cfg!(debug_assertions) {
-          app.handle().plugin(
-            tauri_plugin_log::Builder::default()
-              .level(log::LevelFilter::Info)
-              .build(),
-          )?;
-        }
+  let mut builder = tauri::Builder::default();
+
+  builder = builder
+    .plugin(tauri_plugin_shell::init())
+    .plugin(tauri_plugin_opener::init());
+    // .plugin(tauri_plugin_updater::Builder::new().build());
+
+  if cfg!(debug_assertions) {
+    builder = builder.plugin(
+      tauri_plugin_log::Builder::default()
+        .level(log::LevelFilter::Info)
+        .build(),
+    );
+  }
+
+  builder
+    .setup(|_app| {
         Ok(())
     })
     .invoke_handler(tauri::generate_handler![
