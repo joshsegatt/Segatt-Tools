@@ -2,8 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
-import { Send, Bot, User, Loader2, Cpu } from "lucide-react";
+import { Send, Bot, User, Loader2, Cpu, Zap, Activity } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
+import { useOllama } from "../hooks/useOllama";
+import { AIEngineManager, AIEngineType } from "../lib/AIEngineManager";
 
 interface Message {
   role: "user" | "assistant";
@@ -15,7 +17,15 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput]       = useState("");
   const [loading, setLoading]   = useState(false);
+  const [engine, setEngine]     = useState<AIEngineType>("heuristic");
+  const [localModels, setLocalModels] = useState<string[]>([]);
+  const { isAvailable: ollamaReady, models: ollamaModels } = useOllama();
   const scrollRef                = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("segatt_downloaded_models");
+    if (saved) setLocalModels(JSON.parse(saved));
+  }, []);
 
   // Initialize with localized greeting
   useEffect(() => {
@@ -42,10 +52,14 @@ export const ChatInterface = () => {
     setLoading(true);
 
     try {
-      const response: string = await invoke("chat_with_segatt_ai", { 
-        message: msg,
-        language: language 
-      });
+      const response = await AIEngineManager.sendMessage(
+        engine, 
+        msg, 
+        language,
+        { 
+          model: engine === "ollama" ? ollamaModels[0]?.name : (localModels[0] || "Qwen2.5-0.5B-Instruct-q4f16_1-ML") 
+        }
+      );
       setMessages((p) => [...p, { role: "assistant", content: response }]);
     } catch {
       setMessages((p) => [...p, { role: "assistant", content: t("common.error") }]);
@@ -69,9 +83,32 @@ export const ChatInterface = () => {
         </div>
         <div>
           <div style={{ fontSize: 13, fontWeight: 700 }}>Segatt AI</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "var(--success)", fontWeight: 600 }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--success)" }} />
-            {t("ai.local_notice_short") || "Local Processing"}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
+            <select 
+              value={engine}
+              onChange={(e) => setEngine(e.target.value as AIEngineType)}
+              style={{
+                background: "transparent", border: "none", color: "var(--accent)",
+                fontSize: 10, fontWeight: 700, outline: "none", cursor: "pointer"
+              }}
+            >
+              <option value="heuristic">System Analysis</option>
+              {ollamaReady && <option value="ollama">Ollama (Active)</option>}
+              <option value="local" disabled={localModels.length === 0}>
+                Neural Core {localModels.length === 0 ? "(Offline)" : "(Local)"}
+              </option>
+            </select>
+            {engine === "ollama" && (
+               <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "var(--success)", fontWeight: 600 }}>
+                <Activity size={10} /> Connected
+              </div>
+            )}
+            {engine === "heuristic" && (
+               <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "var(--text-muted)", fontWeight: 600 }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--accent)" }} />
+                Hardware Aware
+              </div>
+            )}
           </div>
         </div>
       </div>

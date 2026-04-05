@@ -5,6 +5,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Zap, Cpu, Database, Terminal, ChevronRight } from "lucide-react";
 import { ChatInterface } from "@/features/ai/components/ChatInterface";
+import { ModelHub } from "@/features/ai/components/ModelHub";
 
 interface SystemContext {
   total_memory: number;
@@ -28,6 +29,7 @@ export default function AIPage() {
   const { t } = useLanguage();
   const [data, setData]           = useState<SmartDiagnostic | null>(null);
   const [isApplying, setApplying] = useState<string | null>(null);
+  const [activeTab, setActiveTab]   = useState<"chat" | "models">("chat");
 
   useEffect(() => {
     const fetch = async () => {
@@ -82,6 +84,28 @@ export default function AIPage() {
             </div>
           ))}
         </div>
+
+        {/* Tab Switcher */}
+        <div style={{ display: "flex", background: "var(--bg-surface)", borderRight: "1px solid var(--border)" }}>
+           {[
+            { id: "chat", label: "Chat" },
+            { id: "models", label: "Models" }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              style={{
+                flex: 1, padding: "12px", border: "none",
+                background: activeTab === tab.id ? "transparent" : "rgba(0,0,0,0.1)",
+                borderBottom: activeTab === tab.id ? "2px solid var(--accent)" : "1px solid var(--border)",
+                color: activeTab === tab.id ? "var(--accent)" : "var(--text-muted)",
+                fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s"
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main area */}
@@ -117,9 +141,9 @@ export default function AIPage() {
           </div>
         )}
 
-        {/* Chat */}
+        {/* Main Content (Chat or Models) */}
         <div style={{ overflow: "hidden" }}>
-          <ChatInterface />
+          {activeTab === "chat" ? <ChatInterface /> : <ModelHub />}
         </div>
       </div>
     </div>

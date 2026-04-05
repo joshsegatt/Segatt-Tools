@@ -12,16 +12,17 @@ $isAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::A
 # Configurações do Repositório Oficial
 $repoUrl = "https://api.github.com/repos/joshsegatt/Segatt-Tools/releases/latest"
 
-Write-Host "`n🪐 Abrindo Segatt Tools Elite Utility (v1.4.0)..." -ForegroundColor Cyan
+# 1. Buscar o release e escolher o melhor asset
+$release = Invoke-RestMethod -Uri $repoUrl
+$version = $release.tag_name
+
+Write-Host "`n🪐 Abrindo Segatt Tools Elite Utility ($version)..." -ForegroundColor Cyan
 Write-Host "----------------------------------------------------" -ForegroundColor Gray
 
 if (-not $isAdmin) {
     Write-Host "⚠️  DICA: Execute o PowerShell como ADMINISTRADOR para melhores resultados." -ForegroundColor Yellow
 }
 
-try {
-    # 1. Buscar o release e escolher o melhor asset
-    $release = Invoke-RestMethod -Uri $repoUrl
     $asset = $release.assets | Where-Object { $_.name -like "*Portable.exe" } | Select-Object -First 1
     
     if (-not $asset) {

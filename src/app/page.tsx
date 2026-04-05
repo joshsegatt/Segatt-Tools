@@ -19,6 +19,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useLanguage } from "@/hooks/useLanguage";
 
 interface SystemStats {
@@ -36,7 +37,7 @@ export default function Dashboard() {
   const [updateStatus, setUpdateStatus] = useState<"idle" | "checking" | "up-to-date" | "available">("idle");
   const [latestVersion, setLatestVersion] = useState<string>("");
 
-  const CURRENT_VERSION = "1.3.0";
+  const CURRENT_VERSION = "1.5.0";
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -79,7 +80,7 @@ export default function Dashboard() {
 
   const openLink = async (url: string) => {
     try {
-      await invoke("open_external_link", { url });
+      await openUrl(url);
     } catch {
       window.open(url, "_blank");
     }
