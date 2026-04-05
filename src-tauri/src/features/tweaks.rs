@@ -40,18 +40,25 @@ pub async fn get_tweaks() -> Result<Vec<Tweak>, String> {
 
 #[tauri::command]
 pub async fn create_restore_point() -> Result<String, String> {
-    let script = "Checkpoint-Computer -Description 'Segatt Tools Pre-Tweak' -RestorePointType 'MODIFY_SETTINGS'";
+    // Execute in a blocking thread to avoid freezing the UI bridge
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        let script = "Checkpoint-Computer -Description 'Segatt Tools Pre-Tweak' -RestorePointType 'MODIFY_SETTINGS'";
 
-    let output = silent_cmd("powershell")
-        .args(&["-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-Command", script])
-        .output()
-        .map_err(|e| format!("Failed to create restore point: {}", e))?;
+        silent_cmd("powershell")
+            .args(&["-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-Command", script])
+            .output()
+            .map_err(|e| format!("Failed to create restore point: {}", e))
+    }).await.map_err(|e| format!("Runtime error: {}", e))?;
 
-    if !output.status.success() {
-        return Err("Failed. Run as Administrator and ensure System Protection is enabled.".to_string());
+    match result {
+        Ok(output) if output.status.success() => {
+            Ok("System restore point created successfully.".to_string())
+        },
+        Ok(_) => {
+            Err("Failed. Ensure System Protection is enabled for your C: drive.".to_string())
+        },
+        Err(e) => Err(e),
     }
-
-    Ok("System restore point created successfully.".to_string())
 }
 
 /// Run a registry command silently and return Ok/Err based on exit code.

@@ -12,12 +12,25 @@ export class AIEngineManager {
   private static localEngine: webllm.MLCEngine | null = null;
   private static currentModelId: string | null = null;
 
+  static async isWebGPUSupported(): Promise<boolean> {
+    if (typeof navigator === "undefined") return false;
+    const nav = navigator as any;
+    if (!nav.gpu) return false;
+    try {
+      const adapter = await nav.gpu.requestAdapter();
+      return !!adapter;
+    } catch {
+      return false;
+    }
+  }
+
   static async sendMessage(
     engine: AIEngineType, 
     message: string, 
     language: string,
     options?: { model?: string }
   ): Promise<string> {
+    // ... logic remains same, calling sub-methods
     switch (engine) {
       case "ollama":
         return this.sendToOllama(message, options?.model || "llama3");
@@ -51,8 +64,15 @@ export class AIEngineManager {
 
   private static async sendToLocal(message: string, modelId: string): Promise<string> {
     try {
+      const isSupported = await this.isWebGPUSupported();
+      if (!isSupported) {
+        return "Local AI Error: WebGPU is not supported on this hardware or driver version. Please update your graphics drivers or use Ollama/Heuristic mode.";
+      }
+
       if (!this.localEngine || this.currentModelId !== modelId) {
-        this.localEngine = await webllm.CreateMLCEngine(modelId);
+        this.localEngine = await webllm.CreateMLCEngine(modelId, {
+          initProgressCallback: (info) => console.log("Initializing AI Engine:", info.text)
+        });
         this.currentModelId = modelId;
       }
 
@@ -61,7 +81,11 @@ export class AIEngineManager {
       });
       return reply.choices[0].message.content || "Empty response from local AI.";
     } catch (err) {
-      return `Local AI Error: ${err instanceof Error ? err.message : String(err)}. Make sure you downloaded the model first!`;
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      if (errorMsg.includes("WebGPU")) {
+        return "Local AI Error: WebGPU hardware initialization failed. Try updating your graphics drivers.";
+      }
+      return `Local AI Error: ${errorMsg}. Make sure you downloaded the model in the Model Hub first!`;
     }
   }
 }

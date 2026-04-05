@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
-import { Send, Bot, User, Loader2, Cpu, Zap, Activity } from "lucide-react";
+import { Send, Bot, User, Loader2, Cpu, Zap, Activity, AlertCircle } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { useOllama } from "../hooks/useOllama";
 import { AIEngineManager, AIEngineType } from "../lib/AIEngineManager";
@@ -19,12 +19,19 @@ export const ChatInterface = () => {
   const [loading, setLoading]   = useState(false);
   const [engine, setEngine]     = useState<AIEngineType>("heuristic");
   const [localModels, setLocalModels] = useState<string[]>([]);
+  const [isGPUReady, setIsGPUReady] = useState<boolean | null>(null);
   const { isAvailable: ollamaReady, models: ollamaModels } = useOllama();
   const scrollRef                = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("segatt_downloaded_models");
     if (saved) setLocalModels(JSON.parse(saved));
+
+    const check = async () => {
+      const ready = await AIEngineManager.isWebGPUSupported();
+      setIsGPUReady(ready);
+    };
+    check();
   }, []);
 
   // Initialize with localized greeting
@@ -94,19 +101,18 @@ export const ChatInterface = () => {
             >
               <option value="heuristic">System Analysis</option>
               {ollamaReady && <option value="ollama">Ollama (Active)</option>}
-              <option value="local" disabled={localModels.length === 0}>
-                Neural Core {localModels.length === 0 ? "(Offline)" : "(Local)"}
+              <option value="local" disabled={localModels.length === 0 || isGPUReady === false}>
+                Neural Core {isGPUReady === false ? "(Hardware Limit)" : localModels.length === 0 ? "(Offline)" : "(Enabled)"}
               </option>
             </select>
-            {engine === "ollama" && (
+            {engine === "local" && isGPUReady && (
                <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "var(--success)", fontWeight: 600 }}>
-                <Activity size={10} /> Connected
+                <Zap size={10} /> Local GPU Active
               </div>
             )}
-            {engine === "heuristic" && (
-               <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "var(--text-muted)", fontWeight: 600 }}>
-                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--accent)" }} />
-                Hardware Aware
+            {engine === "local" && !isGPUReady && isGPUReady !== null && (
+               <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "var(--danger)", fontWeight: 600 }}>
+                <AlertCircle size={10} /> GPU Needed
               </div>
             )}
           </div>
