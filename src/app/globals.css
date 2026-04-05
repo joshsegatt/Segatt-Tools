@@ -83,6 +83,14 @@ input, textarea { font: inherit; }
   overflow: hidden;
 }
 
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ============================================================
    TOP BAR (replaces sidebar)
    ============================================================ */

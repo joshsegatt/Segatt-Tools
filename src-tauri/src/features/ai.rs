@@ -1,6 +1,5 @@
-use sysinfo::{System, ProcessRefreshKind};
+use sysinfo::{System};
 use serde::{Serialize, Deserialize};
-use crate::features::tweaks::{get_tweaks, Tweak};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SystemContext {
@@ -29,7 +28,7 @@ pub struct SmartDiagnostic {
 pub struct TweakSuggestion {
     pub tweak_id: String,
     pub reason: String,
-    pub impact: String, // Low, Medium, High
+    pub impact: String,
 }
 
 #[tauri::command]
@@ -37,12 +36,11 @@ pub async fn get_system_context() -> Result<SystemContext, String> {
     let mut sys = System::new_all();
     sys.refresh_all();
     
-    // Pequena pausa para capturar o uso de CPU real
-    std::thread::sleep(std::time::Duration::from_millis(200));
+    std::thread::sleep(std::time::Duration::from_millis(100));
     sys.refresh_cpu_all();
 
-    let total_memory = sys.total_memory() / 1024 / 1024; // MB
-    let used_memory = sys.used_memory() / 1024 / 1024; // MB
+    let total_memory = sys.total_memory() / 1024 / 1024;
+    let used_memory = sys.used_memory() / 1024 / 1024;
     let cpu_usage = sys.global_cpu_usage();
     let os_name = System::name().unwrap_or("Windows".into());
     let os_version = System::os_version().unwrap_or("Unknown".into());
@@ -74,11 +72,10 @@ pub async fn get_smart_diagnostic() -> Result<SmartDiagnostic, String> {
     let context = get_system_context().await?;
     let mut suggestions = Vec::new();
 
-    // Lógica de "Pensamento" da IA baseada no estado do sistema
     if context.cpu_usage > 50.0 {
         suggestions.push(TweakSuggestion {
-            tweak_id: "performance_power_plan".to_string(),
-            reason: "Sua CPU está sob carga alta. O Plano de Desempenho Máximo pode ajudar a manter frequências mais estáveis.".to_string(),
+            tweak_id: "high_performance_plan".to_string(),
+            reason: "High CPU load detected. Switching to High Performance can stabilize frequencies.".to_string(),
             impact: "High".to_string(),
         });
     }
@@ -86,34 +83,42 @@ pub async fn get_smart_diagnostic() -> Result<SmartDiagnostic, String> {
     if context.os_version.contains("11") {
         suggestions.push(TweakSuggestion {
             tweak_id: "classic_context_menu".to_string(),
-            reason: "Detectado Windows 11. O menu clássico reduz o uso de recursos da Shell e melhora a agilidade.".to_string(),
+            reason: "Windows 11 detected. Classic context menu improves shell responsiveness.".to_string(),
             impact: "Medium".to_string(),
         });
     }
 
-    // Sugestão padrão de privacidade
-    suggestions.push(TweakSuggestion {
-        tweak_id: "disable_telemetry".to_string(),
-        reason: "Processos de telemetria em segundo plano foram detectados. Desativar pode liberar recursos e melhorar a privacidade.".to_string(),
-        impact: "Low".to_string(),
-    });
-
-    Ok(SmartDiagnostic {
-        context,
-        suggestions,
-    })
+    Ok(SmartDiagnostic { context, suggestions })
 }
 
 #[tauri::command]
 pub async fn chat_with_segatt_ai(message: String) -> Result<String, String> {
     let msg = message.to_lowercase();
-    if msg.contains("ram") || msg.contains("memória") {
-        Ok("Analisando sua memória... Percebo processos consumindo bastante RAM. Recomendo o Tweak de 'Otimização de Serviços' ou fechar navegadores pesados.".to_string())
-    } else if msg.contains("lento") || msg.contains("performance") {
-        Ok("Senti um gargalo no processamento. Executei o diagnóstico e recomendo ativar o 'Plano de Desempenho Máximo' para estabilizar os frames.".to_string())
-    } else if msg.contains("telemetria") || msg.contains("privacidade") {
-        Ok("A telemetria do Windows envia logs constantes. Desativá-la reduz o I/O de disco e protege seus dados.".to_string())
-    } else {
-        Ok("Estou aqui para ajudar. Posso analisar seu hardware agora se você pedir um 'diagnóstico completo'.".to_string())
+    
+    // 1. Detect language (Simple heuristic)
+    let is_pt = msg.contains("memória") || msg.contains("lento") || msg.contains("ajuda") || msg.contains("limpar") || msg.contains("como");
+    let is_es = msg.contains("ayuda") || msg.contains("lento") || msg.contains("memoria") || msg.contains("limpiar");
+
+    // 2. Mock Real AI logic - Multilingual
+    if msg.contains("ram") || msg.contains("memória") || msg.contains("memoria") {
+        if is_pt { return Ok("Analisando sua RAM... Recomendo limpar o cache de Shaders e fechar processos pesados.".into()); }
+        if is_es { return Ok("Analizando su RAM... Recomendo limpiar el caché de Shaders y cerrar procesos pesados.".into()); }
+        return Ok("Analyzing your RAM... I recommend clearing the Shader cache and closing heavy processes.".into());
     }
+
+    if msg.contains("lento") || msg.contains("fps") || msg.contains("perf") {
+        if is_pt { return Ok("Para melhorar o FPS, execute a 'Limpeza Gamer' e ative o 'Plano de Desempenho Máximo'.".into()); }
+        if is_es { return Ok("Para mejorar el FPS, ejecute la 'Limpieza Gamer' y active el 'Plan de Alto Rendimiento'.".into()); }
+        return Ok("To improve FPS, run the 'Gamer Cleanup' and enable the 'High Performance Power Plan'.".into());
+    }
+
+    if msg.contains("cleaner") || msg.contains("limpar") || msg.contains("limpeza") || msg.contains("limpiar") {
+        if is_pt { return Ok("O módulo de limpeza remove arquivos temporários e caches que retardam o sistema. Tente agora!".into()); }
+        return Ok("The cleaner module removes temporary files and caches that slow down your system. Try it now!".into());
+    }
+
+    // Default response
+    if is_pt { return Ok("Estou aqui para ajudar. Posso analisar seu hardware ou explicar qualquer tweak.".into()); }
+    if is_es { return Ok("Estoy aquí para ayudar. Puedo analizar su hardware o explicar cualquier tweak.".into()); }
+    Ok("I'm here to help. I can analyze your hardware or explain any tweak to you.".into())
 }

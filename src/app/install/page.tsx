@@ -15,13 +15,14 @@ import {
   MessageSquare,
   CheckCheck,
   X,
+  Cpu,
 } from "lucide-react";
 import { APP_CATEGORIES, type AppEntry, type InstalledStatus } from "@/lib/app-categories";
 import { TerminalOutput } from "@/features/packages/components/TerminalOutput";
 
 // ─── Icon map ───────────────────────────────────────────────
 const ICON_MAP: Record<string, React.ElementType> = {
-  Globe, Code2, Gamepad2, Music, Wrench, MessageSquare,
+  Globe, Code2, Gamepad2, Music, Wrench, MessageSquare, Cpu,
 };
 
 // ─── Single app row ─────────────────────────────────────────

@@ -9,12 +9,14 @@ import {
   RefreshCw,
   Globe,
   Info,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
   { icon: LayoutDashboard, label: "Dashboard",  href: "/" },
+  { icon: Trash2,          label: "Cleaner",    href: "/cleaner" },
   { icon: Package,         label: "Install",     href: "/install" },
   { icon: Wrench,          label: "Tweaks",      href: "/tweaks" },
   { icon: Cpu,             label: "AI",          href: "/ai" },

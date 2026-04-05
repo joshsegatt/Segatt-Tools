@@ -3,6 +3,7 @@ mod features;
 use crate::features::packages::{search_packages, install_package_stream};
 use crate::features::tweaks::{get_tweaks, apply_tweak, create_restore_point, check_admin};
 use crate::features::ai::{get_system_context, chat_with_segatt_ai, get_smart_diagnostic};
+use crate::features::cleaner::run_cleanup;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -26,7 +27,8 @@ pub fn run() {
       check_admin,
       get_system_context,
       chat_with_segatt_ai,
-      get_smart_diagnostic
+      get_smart_diagnostic,
+      run_cleanup
     ])
 
 
