@@ -1,13 +1,23 @@
 # 🪐 Segatt Tools - Instant PowerShell Runner
 # Inspirado no CTT Tools - Download e Execução Instantânea
 
+# 0. Configurações de Segurança e Ambiente
 $ErrorActionPreference = "Stop"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# Verificar se está como Administrador
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+$isAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 # Configurações do Repositório Oficial
 $repoUrl = "https://api.github.com/repos/joshsegatt/Segatt-Tools/releases/latest"
 
-Write-Host "`n🪐 Abrindo Segatt Tools Elite Utility..." -ForegroundColor Cyan
+Write-Host "`n🪐 Abrindo Segatt Tools Elite Utility (v1.3.0)..." -ForegroundColor Cyan
 Write-Host "----------------------------------------------------" -ForegroundColor Gray
+
+if (-not $isAdmin) {
+    Write-Host "⚠️  DICA: Execute o PowerShell como ADMINISTRADOR para melhores resultados." -ForegroundColor Yellow
+}
 
 try {
     # 1. Buscar o release e escolher o melhor asset
