@@ -37,5 +37,12 @@
       "icons/icon.ico"
     ],
     "publisher": "Segatt Soft"
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://raw.githubusercontent.com/joshsegatt/Segatt-Tools/main/update.json"
+      ]
+    }
   }
 }

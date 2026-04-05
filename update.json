@@ -1,0 +1,11 @@
+{
+  "version": "1.5.0",
+  "notes": "Segatt Tools v1.5.0 - Neural Core Integration: One-Click Update Engine enabled. High-performance system diagnostics and AI acceleration.",
+  "pub_date": "2026-04-05T21:30:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "",
+      "url": "https://github.com/joshsegatt/Segatt-Tools/releases/download/v1.5.0/Segatt.Tools_1.5.0_x64_en-US.msi"
+    }
+  }
+}

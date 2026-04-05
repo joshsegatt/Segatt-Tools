@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { check } from "@tauri-apps/plugin-updater";
+import { relaunch } from "@tauri-apps/plugin-process";
 import { useLanguage } from "@/hooks/useLanguage";
 
 interface SystemStats {
@@ -34,8 +36,10 @@ export default function Dashboard() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   
   // Updater state
-  const [updateStatus, setUpdateStatus] = useState<"idle" | "checking" | "up-to-date" | "available">("idle");
+  const [updateStatus, setUpdateStatus] = useState<"idle" | "checking" | "up-to-date" | "available" | "downloading" | "installing">("idle");
   const [latestVersion, setLatestVersion] = useState<string>("");
+  const [downloadProgress, setDownloadProgress] = useState<number>(0);
+  const [updateObj, setUpdateObj] = useState<any>(null);
 
   const CURRENT_VERSION = "1.5.0";
 
@@ -63,18 +67,52 @@ export default function Dashboard() {
   const checkUpdates = async () => {
     setUpdateStatus("checking");
     try {
-      const response = await fetch("https://api.github.com/repos/joshsegatt/Segatt-Tools/releases/latest");
-      const data = await response.json();
-      const version = data.tag_name.replace("v", "");
-      setLatestVersion(version);
-      
-      if (version !== CURRENT_VERSION) {
+      const update = await check();
+      if (update) {
+        setLatestVersion(update.version);
+        setUpdateObj(update);
         setUpdateStatus("available");
       } else {
         setUpdateStatus("up-to-date");
       }
     } catch (error) {
+      console.error("Update check failed:", error);
       setUpdateStatus("idle");
+    }
+  };
+
+  const installUpdate = async () => {
+    if (!updateObj) return;
+    setUpdateStatus("downloading");
+    
+    try {
+      let downloaded = 0;
+      let contentLength = 0;
+
+      await updateObj.downloadAndInstall((event: any) => {
+        switch (event.event) {
+          case 'Started':
+            contentLength = event.data.contentLength || 0;
+            setUpdateStatus("downloading");
+            break;
+          case 'Progress':
+            downloaded += event.data.chunkLength;
+            if (contentLength > 0) {
+              setDownloadProgress(Math.round((downloaded / contentLength) * 100));
+            }
+            break;
+          case 'Finished':
+            setUpdateStatus("installing");
+            break;
+        }
+      });
+
+      // Restart the app
+      await relaunch();
+    } catch (error) {
+      console.error("Update installation failed:", error);
+      alert("Update failed. Please try manual download.");
+      setUpdateStatus("available");
     }
   };
 
@@ -276,24 +314,28 @@ export default function Dashboard() {
               {updateStatus === "idle" && `v${CURRENT_VERSION}`}
               {updateStatus === "checking" && t("dashboard.checking")}
               {updateStatus === "up-to-date" && t("dashboard.up_to_date")}
-              {updateStatus === "available" && t("dashboard.update_available")}
+              {updateStatus === "available" && `${t("dashboard.update_available")} (v${latestVersion})`}
+              {updateStatus === "downloading" && `Downloading... ${downloadProgress}%`}
+              {updateStatus === "installing" && "Installing update..."}
             </div>
           </div>
-          {updateStatus === "available" ? (
+          {updateStatus === "available" && (
              <button 
-              onClick={() => openLink("https://github.com/joshsegatt/Segatt-Tools/releases/latest")}
+              onClick={installUpdate}
               className="action-btn-primary"
-              style={{ padding: "6px 12px", fontSize: 12 }}
-             >
-               {t("dashboard.update_btn").replace("{v}", latestVersion)}
-             </button>
-          ) : (
-            <div 
-              onClick={checkUpdates}
-              style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}
+              style={{ padding: "8px 16px", borderRadius: 8, fontSize: 12, marginLeft: "auto", background: "var(--warning)", color: "black" }}
             >
-              {t("dashboard.check_updates")} <ArrowRight size={12} />
-            </div>
+              Update Now
+            </button>
+          )}
+          {(updateStatus === "idle" || updateStatus === "up-to-date") && (
+            <button 
+              onClick={checkUpdates}
+              className="action-btn-primary"
+              style={{ padding: "8px 12px", borderRadius: 8, fontSize: 11, marginLeft: "auto", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+            >
+              Check
+            </button>
           )}
         </div>
 
