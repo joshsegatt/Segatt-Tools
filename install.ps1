@@ -12,7 +12,7 @@ $isAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::A
 # Configurações do Repositório Oficial
 $repoUrl = "https://api.github.com/repos/joshsegatt/Segatt-Tools/releases/latest"
 
-Write-Host "`n🪐 Abrindo Segatt Tools Elite Utility (v1.3.0)..." -ForegroundColor Cyan
+Write-Host "`n🪐 Abrindo Segatt Tools Elite Utility (v1.4.0)..." -ForegroundColor Cyan
 Write-Host "----------------------------------------------------" -ForegroundColor Gray
 
 if (-not $isAdmin) {
