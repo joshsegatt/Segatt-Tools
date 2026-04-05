@@ -11,6 +11,12 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertTriangle,
+  Github,
+  Instagram,
+  Linkedin,
+  Heart,
+  RefreshCw,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -25,6 +31,12 @@ export default function Dashboard() {
   const { t } = useLanguage();
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  
+  // Updater state
+  const [updateStatus, setUpdateStatus] = useState<"idle" | "checking" | "up-to-date" | "available">("idle");
+  const [latestVersion, setLatestVersion] = useState<string>("");
+
+  const CURRENT_VERSION = "1.3.0";
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -46,6 +58,32 @@ export default function Dashboard() {
     const interval = setInterval(fetchStats, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  const checkUpdates = async () => {
+    setUpdateStatus("checking");
+    try {
+      const response = await fetch("https://api.github.com/repos/joshsegatt/Segatt-Tools/releases/latest");
+      const data = await response.json();
+      const version = data.tag_name.replace("v", "");
+      setLatestVersion(version);
+      
+      if (version !== CURRENT_VERSION) {
+        setUpdateStatus("available");
+      } else {
+        setUpdateStatus("up-to-date");
+      }
+    } catch (error) {
+      setUpdateStatus("idle");
+    }
+  };
+
+  const openLink = async (url: string) => {
+    try {
+      await invoke("open_external_link", { url });
+    } catch {
+      window.open(url, "_blank");
+    }
+  };
 
   const ramPct = stats
     ? Math.round((stats.used_memory / stats.total_memory) * 100)
@@ -222,6 +260,102 @@ export default function Dashboard() {
             </div>
           </div>
         </Link>
+      </div>
+
+      {/* Social & Support & Updater */}
+      <div className="quick-grid" style={{ marginTop: 24 }}>
+        {/* Updater Card */}
+        <div className="quick-card" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.1)", color: "var(--text-muted)" }}>
+            <RefreshCw size={20} className={updateStatus === "checking" ? "spin" : ""} />
+          </div>
+          <div>
+            <div className="quick-card-title">{t("dashboard.check_updates")}</div>
+            <div className="quick-card-desc" style={{ color: updateStatus === "available" ? "var(--warning)" : "inherit" }}>
+              {updateStatus === "idle" && `v${CURRENT_VERSION}`}
+              {updateStatus === "checking" && t("dashboard.checking")}
+              {updateStatus === "up-to-date" && t("dashboard.up_to_date")}
+              {updateStatus === "available" && t("dashboard.update_available")}
+            </div>
+          </div>
+          {updateStatus === "available" ? (
+             <button 
+              onClick={() => openLink("https://github.com/joshsegatt/Segatt-Tools/releases/latest")}
+              className="action-btn-primary"
+              style={{ padding: "6px 12px", fontSize: 12 }}
+             >
+               {t("dashboard.update_btn").replace("{v}", latestVersion)}
+             </button>
+          ) : (
+            <div 
+              onClick={checkUpdates}
+              style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}
+            >
+              {t("dashboard.check_updates")} <ArrowRight size={12} />
+            </div>
+          )}
+        </div>
+
+        {/* Support Card */}
+        <div className="quick-card" style={{ 
+          background: "linear-gradient(135deg, rgba(231, 76, 60, 0.05) 0%, rgba(192, 57, 43, 0.1) 100%)",
+          border: "1px solid rgba(231, 76, 60, 0.2)"
+        }}>
+          <div className="quick-card-icon" style={{ background: "rgba(231, 76, 60, 0.2)", color: "#e74c3c" }}>
+            <Heart size={20} fill="#e74c3c" />
+          </div>
+          <div>
+            <div className="quick-card-title">{t("dashboard.support_title")}</div>
+            <div className="quick-card-desc">
+              {t("dashboard.support_desc")}
+            </div>
+          </div>
+          <button 
+            onClick={() => openLink("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=segatt22@gmail.com&item_name=Segatt+Tools+Support")}
+            className="action-btn-primary"
+            style={{ 
+              background: "#e74c3c", 
+              boxShadow: "0 4px 12px rgba(231, 76, 60, 0.3)",
+              fontSize: 12,
+              padding: "8px 16px"
+            }}
+          >
+            {t("dashboard.donate_btn")}
+          </button>
+        </div>
+
+        {/* Connect Section */}
+        <div className="quick-card" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.1)", color: "var(--text-muted)" }}>
+            <ExternalLink size={20} />
+          </div>
+          <div>
+            <div className="quick-card-title">{t("dashboard.socials_title")}</div>
+            <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+              <button 
+                onClick={() => openLink("https://github.com/joshsegatt")}
+                title={t("dashboard.github")}
+                className="social-icon-btn"
+              >
+                <Github size={18} />
+              </button>
+              <button 
+                onClick={() => openLink("https://www.instagram.com/josh_segatt")}
+                title={t("dashboard.instagram")}
+                className="social-icon-btn"
+              >
+                <Instagram size={18} />
+              </button>
+              <button 
+                onClick={() => openLink("https://www.linkedin.com/in/josh-segat-522760102/?locale=en")}
+                title={t("dashboard.linkedin")}
+                className="social-icon-btn"
+              >
+                <Linkedin size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -35,6 +35,20 @@ export const translations = {
       open_installer: "Abrir Instalador",
       open_tweaks: "Abrir Ajustes",
       open_ai: "Abrir AI",
+      // Connect & Support
+      socials_title: "Conecte-se",
+      support_title: "Apoie o Projeto",
+      support_desc: "Ajude a manter o Segatt Tools gratuito e potente.",
+      donate_btn: "Doar via PayPal",
+      github: "GitHub Oficial",
+      instagram: "Siga no Instagram",
+      linkedin: "Perfil Profissional",
+      // Updater
+      check_updates: "Verificar Atualizações",
+      checking: "Buscando...",
+      up_to_date: "Sistema Atualizado",
+      update_available: "Nova Versão!",
+      update_btn: "Baixar v{v}",
     },
     // Cleaner
     cleaner: {
@@ -137,6 +151,20 @@ export const translations = {
       open_installer: "Open Installer",
       open_tweaks: "Open Tweaks",
       open_ai: "Open AI",
+      // Connect & Support
+      socials_title: "Connect",
+      support_title: "Support the Project",
+      support_desc: "Help keep Segatt Tools free and powerful.",
+      donate_btn: "Donate via PayPal",
+      github: "Official GitHub",
+      instagram: "Follow on Instagram",
+      linkedin: "Professional Profile",
+      // Updater
+      check_updates: "Check for Updates",
+      checking: "Checking...",
+      up_to_date: "System Up to date",
+      update_available: "New Version!",
+      update_btn: "Download v{v}",
     },
     // Cleaner
     cleaner: {
