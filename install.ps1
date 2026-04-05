@@ -23,6 +23,8 @@ if (-not $isAdmin) {
     Write-Host "⚠️  DICA: Execute o PowerShell como ADMINISTRADOR para melhores resultados." -ForegroundColor Yellow
 }
 
+try {
+
     $asset = $release.assets | Where-Object { $_.name -like "*Portable.exe" } | Select-Object -First 1
     
     if (-not $asset) {
