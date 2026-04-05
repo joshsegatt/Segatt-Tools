@@ -5,13 +5,12 @@ $ErrorActionPreference = "Stop"
 
 # Configurações do Repositório Oficial
 $repoUrl = "https://api.github.com/repos/joshsegatt/Segatt-Tools/releases/latest"
-$tempPath = "$env:TEMP\SegattTools.exe"
 
 Write-Host "`n🪐 Abrindo Segatt Tools Elite Utility..." -ForegroundColor Cyan
 Write-Host "----------------------------------------------------" -ForegroundColor Gray
 
 try {
-    # 1. Buscar a versão portátil (Portable.exe)
+    # 1. Buscar o release e escolher o melhor asset
     $release = Invoke-RestMethod -Uri $repoUrl
     $asset = $release.assets | Where-Object { $_.name -like "*Portable.exe" } | Select-Object -First 1
     
@@ -29,6 +28,11 @@ try {
         throw "Nenhum instalador encontrado na release $($release.tag_name). Verifique o repositório GitHub."
     }
 
+    # Definir caminho temporário único para evitar erro de 'arquivo em uso'
+    $extension = [System.IO.Path]::GetExtension($asset.name)
+    $tempName = "SegattTools_" + (Get-Date -Format "yyyyMMdd_HHmmss") + $extension
+    $tempPath = Join-Path $env:TEMP $tempName
+
     $downloadUrl = $asset.browser_download_url
     Write-Host "📦 Arquivo encontrado: $($asset.name)" -ForegroundColor Gray
     Write-Host "📦 Carregando módulos do sistema..." -ForegroundColor Gray
@@ -36,8 +40,12 @@ try {
     # 2. Download e Execução
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath
     
-    Write-Host "🚀 Iniciando..." -ForegroundColor Green
-    Start-Process -FilePath $tempPath
+    Write-Host "🚀 Iniciando $($asset.name)..." -ForegroundColor Green
+    if ($extension -eq ".msi") {
+        Start-Process msiexec.exe -ArgumentList "/i `"$tempPath`"" -Wait
+    } else {
+        Start-Process -FilePath $tempPath
+    }
 }
 catch {
     Write-Host "`n❌ Erro ao abrir a ferramenta: $($_.Exception.Message)" -ForegroundColor Red
