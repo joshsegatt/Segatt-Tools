@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Zap, Cpu, Database, Terminal, ChevronRight } from "lucide-react";
 import { ChatInterface } from "@/features/ai/components/ChatInterface";
 
@@ -24,6 +25,7 @@ interface SmartDiagnostic {
 }
 
 export default function AIPage() {
+  const { t } = useLanguage();
   const [data, setData]           = useState<SmartDiagnostic | null>(null);
   const [isApplying, setApplying] = useState<string | null>(null);
 
@@ -71,7 +73,7 @@ export default function AIPage() {
         {/* Top processes */}
         <div style={{ padding: "10px 16px", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
           <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>
-            <Terminal size={10} /> Live Processes
+            <Terminal size={10} /> {t("dashboard.perf_title")}
           </div>
           {ctx?.top_processes.slice(0, 3).map((p, i) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
@@ -88,7 +90,7 @@ export default function AIPage() {
         {data?.suggestions && data.suggestions.length > 0 && (
           <div style={{ borderRight: "1px solid var(--border)", overflowY: "auto", display: "flex", flexDirection: "column" }}>
             <div style={{ padding: "10px 14px", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", background: "var(--bg-surface)" }}>
-              AI Recommendations
+               {t("ai.recommendations")}
             </div>
             {data.suggestions.map((s, i) => (
               <div key={i} className="item-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 8, padding: "12px 14px", cursor: "default" }}>
@@ -108,7 +110,7 @@ export default function AIPage() {
                   onClick={() => applyTweak(s.tweak_id)}
                   disabled={isApplying === s.tweak_id}
                 >
-                  {isApplying === s.tweak_id ? "Applying..." : <><ChevronRight size={12} />Optimize Now</>}
+                  {isApplying === s.tweak_id ? "..." : <><ChevronRight size={12} />{t("ai.optimize_btn")}</>}
                 </button>
               </div>
             ))}

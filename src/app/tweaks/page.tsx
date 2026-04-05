@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   Loader2,
   Play,
@@ -13,9 +14,10 @@ import {
   Shield,
   Monitor,
   Settings,
+  LifeBuoy,
 } from "lucide-react";
 
-// ─── Tweak Data ──────────────────────────────────────────────
+// ─── Tweak Row Component ────────────────────────────────────
 interface TweakDef {
   id: string;
   name: string;
@@ -24,55 +26,6 @@ interface TweakDef {
   preset?: ("essential" | "privacy" | "gaming")[];
 }
 
-const TWEAKS: TweakDef[] = [
-  // Privacy column
-  { id: "disable_telemetry",       name: "Disable Telemetry",            description: "Stops Windows from sending diagnostic and usage data to Microsoft servers.",       column: "privacy", preset: ["essential", "privacy"] },
-  { id: "disable_cortana",         name: "Disable Cortana",              description: "Disables the Cortana virtual assistant and its background data collection.",         column: "privacy", preset: ["privacy"] },
-  { id: "disable_activity_feed",   name: "Disable Activity Feed",        description: "Prevents Windows from tracking your activity history across devices.",               column: "privacy", preset: ["privacy"] },
-  { id: "remove_bing_search",      name: "Remove Bing from Search",      description: "Removes Bing web results from the Windows Start Menu search.",                       column: "privacy", preset: ["essential", "privacy"] },
-  { id: "disable_location",        name: "Disable Location Tracking",    description: "Prevents apps from accessing your device location.",                                  column: "privacy", preset: ["privacy"] },
-  { id: "disable_advertising_id",  name: "Disable Advertising ID",       description: "Stops advertisers from tracking your usage patterns across apps.",                    column: "privacy", preset: ["essential", "privacy"] },
-  { id: "disable_wifi_sense",      name: "Disable WiFi Sense",           description: "Prevents Windows from automatically connecting to shared networks.",                  column: "privacy" },
-  { id: "disable_feedback",        name: "Disable Feedback Prompts",     description: "Stops Windows from asking for feedback and sending it to Microsoft.",                 column: "privacy", preset: ["privacy"] },
-
-  // Performance column
-  { id: "optimize_hpet",           name: "Optimize HPET",                description: "Disables High Precision Event Timer to reduce CPU overhead in some configurations.", column: "performance", preset: ["gaming"] },
-  { id: "disable_game_bar",        name: "Disable Game Bar",             description: "Removes the Xbox Game Bar overlay to free resources for gaming.",                    column: "performance", preset: ["gaming"] },
-  { id: "high_performance_plan",   name: "Set High Performance Plan",    description: "Switches Windows power plan to maximum performance mode.",                            column: "performance", preset: ["essential", "gaming"] },
-  { id: "disable_superfetch",      name: "Disable SysMain (Superfetch)", description: "Disables the service that pre-loads apps — recommended for SSDs.",                  column: "performance", preset: ["essential"] },
-  { id: "disable_search_indexing", name: "Disable Search Indexing",      description: "Stops background drive indexing. Reduces disk I/O on SSDs.",                         column: "performance" },
-  { id: "disable_visual_fx",       name: "Disable Visual Effects",       description: "Turns off animations and transparency effects for maximum responsiveness.",           column: "performance", preset: ["essential"] },
-  { id: "set_dns_cloudflare",      name: "Set DNS to Cloudflare",        description: "Changes DNS to 1.1.1.1 and 1.0.0.1 for faster, more private browsing.",              column: "performance" },
-
-  // Interface column
-  { id: "dark_mode",               name: "Enable Dark Mode",             description: "Forces dark mode for apps and system UI.",                                            column: "interface", preset: ["essential"] },
-  { id: "classic_context_menu",    name: "Classic Context Menu",         description: "Restores the full Windows 10-style right-click context menu in Windows 11.",          column: "interface", preset: ["essential"] },
-  { id: "show_file_extensions",    name: "Show File Extensions",         description: "Makes hidden file extensions (e.g., .exe, .pdf) visible in Explorer.",               column: "interface", preset: ["essential"] },
-  { id: "show_hidden_files",       name: "Show Hidden Files",            description: "Reveals hidden files and folders in File Explorer.",                                  column: "interface" },
-  { id: "disable_mouse_accel",     name: "Disable Mouse Acceleration",   description: "Removes mouse pointer precision for consistent cursor movement.",                    column: "interface", preset: ["gaming"] },
-
-  // System column
-  { id: "enable_long_paths",       name: "Enable Long File Paths",       description: "Removes the 260-character path length limit in Windows.",                            column: "system", preset: ["essential"] },
-  { id: "enable_f8_boot",          name: "Enable F8 Boot Menu",          description: "Restores the ability to access boot options by pressing F8 on startup.",             column: "system" },
-  { id: "disable_fast_startup",    name: "Disable Fast Startup",         description: "Ensures a clean shutdown each time instead of a hybrid sleep state.",                column: "system" },
-  { id: "disable_windows_update",  name: "Pause Windows Updates",        description: "Pauses Windows Update for 1 year. Updates can be re-enabled anytime.",              column: "system" },
-  { id: "create_restore_point",    name: "Create Restore Point",         description: "Creates a System Restore Point before making changes. Highly recommended.",          column: "system", preset: ["essential"] },
-];
-
-const COLUMNS: { key: TweakDef["column"]; label: string; icon: React.ElementType }[] = [
-  { key: "privacy",     label: "Privacy",     icon: Shield },
-  { key: "performance", label: "Performance", icon: Zap },
-  { key: "interface",   label: "Interface",   icon: Monitor },
-  { key: "system",      label: "System",      icon: Settings },
-];
-
-const PRESETS = [
-  { key: "essential", label: "⚡ Essential Tweaks",  desc: "Safe, recommended changes for all users" },
-  { key: "privacy",   label: "🛡 Privacy Pack",       desc: "Maximum privacy with minimal impact" },
-  { key: "gaming",    label: "🎮 Gaming Mode",        desc: "Optimize for gaming performance" },
-] as const;
-
-// ─── Tweak Row Component ────────────────────────────────────
 interface TweakRowProps {
   tweak: TweakDef;
   isSelected: boolean;
@@ -109,10 +62,55 @@ const TweakRow = ({ tweak, isSelected, onToggle }: TweakRowProps) => (
 
 // ─── Main Page ───────────────────────────────────────────────
 export default function TweaksPage() {
+  const { t } = useLanguage();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isAdmin, setIsAdmin]   = useState<boolean | null>(null);
   const [isApplying, setIsApplying] = useState(false);
   const [notification, setNotification] = useState<{ type: "success"|"error"|"info"; msg: string } | null>(null);
+
+  const TWEAKS: TweakDef[] = [
+    { id: "disable_telemetry",       name: "Disable Telemetry",            description: "Stops Windows from sending diagnostic and usage data.",       column: "privacy", preset: ["essential", "privacy"] },
+    { id: "disable_cortana",         name: "Disable Cortana",              description: "Disables the Cortana virtual assistant.",         column: "privacy", preset: ["privacy"] },
+    { id: "disable_activity_feed",   name: "Disable Activity Feed",        description: "Prevents Windows from tracking your activity history.",               column: "privacy", preset: ["privacy"] },
+    { id: "remove_bing_search",      name: "Remove Bing Search",           description: "Removes Bing results from Start Menu search.",                       column: "privacy", preset: ["essential", "privacy"] },
+    { id: "disable_location",        name: "Disable Location",             description: "Prevents apps from accessing your location.",                                  column: "privacy", preset: ["privacy"] },
+    { id: "disable_advertising_id",  name: "Disable Advertising ID",       description: "Stops advertisers from tracking your usage patterns.",                    column: "privacy", preset: ["essential", "privacy"] },
+    { id: "disable_wifi_sense",      name: "Disable WiFi Sense",           description: "Prevents auto-connecting to shared networks.",                  column: "privacy" },
+    { id: "disable_feedback",        name: "Disable Feedback",             description: "Stops Windows from asking for feedback.",                 column: "privacy", preset: ["privacy"] },
+
+    { id: "optimize_hpet",           name: "Optimize HPET",                description: "Disables High Precision Event Timer to reduce lag.", column: "performance", preset: ["gaming"] },
+    { id: "disable_game_bar",        name: "Disable Game Bar",             description: "Removes Xbox Game Bar overlay.",                    column: "performance", preset: ["gaming"] },
+    { id: "high_performance_plan",   name: "High Performance Plan",        description: "Switches Windows to maximum performance mode.",                            column: "performance", preset: ["essential", "gaming"] },
+    { id: "disable_superfetch",      name: "Disable SysMain",              description: "Disables service that pre-loads apps (SSD recommended).",                  column: "performance", preset: ["essential"] },
+    { id: "disable_search_indexing", name: "Disable Indexing",             description: "Stops background drive indexing.",                         column: "performance" },
+    { id: "disable_visual_fx",       name: "Disable Visual Effects",       description: "Turns off animations for responsiveness.",           column: "performance", preset: ["essential"] },
+    { id: "set_dns_cloudflare",      name: "Set DNS Cloudflare",           description: "Changes DNS to 1.1.1.1 for privacy/speed.",              column: "performance" },
+
+    { id: "dark_mode",               name: "Enable Dark Mode",             description: "Forces dark mode for system UI.",                                            column: "interface", preset: ["essential"] },
+    { id: "classic_context_menu",    name: "Classic Context Menu",         description: "Restores Win10-style right-click menu in Win11.",          column: "interface", preset: ["essential"] },
+    { id: "show_file_extensions",    name: "Show Extensions",              description: "Makes file extensions visible in Explorer.",               column: "interface", preset: ["essential"] },
+    { id: "show_hidden_files",       name: "Show Hidden Files",            description: "Reveals hidden files in File Explorer.",                                  column: "interface" },
+    { id: "disable_mouse_accel",     name: "Disable Mouse Accel",          description: "Removes pointer precision for gaming consistency.",                    column: "interface", preset: ["gaming"] },
+
+    { id: "enable_long_paths",       name: "Enable Long Paths",            description: "Removes the 260-character path limit.",                            column: "system", preset: ["essential"] },
+    { id: "enable_f8_boot",          name: "Enable F8 Boot",               description: "Restores F8 boot options access.",             column: "system" },
+    { id: "disable_fast_startup",    name: "Disable Fast Startup",         description: "Ensures clean shutdown instead of hybrid sleep.",                column: "system" },
+    { id: "disable_windows_update",  name: "Pause Updates",                description: "Pauses Windows Update to prevent background tasks.",              column: "system" },
+    { id: "create_restore_point",    name: "Manual Restore Point",         description: "Creates a System Restore Point immediately.",          column: "system", preset: ["essential"] },
+  ];
+
+  const COLUMNS: { key: TweakDef["column"]; label: string; icon: React.ElementType }[] = [
+    { key: "privacy",     label: t("tweaks.categories.privacy"),     icon: Shield },
+    { key: "performance", label: t("tweaks.categories.performance"), icon: Zap },
+    { key: "interface",   label: t("tweaks.categories.interface"),   icon: Monitor },
+    { key: "system",      label: t("tweaks.categories.system"),      icon: Settings },
+  ];
+
+  const PRESETS = [
+    { key: "essential", label: "⚡ Essential",  desc: "Safe, recommended changes" },
+    { key: "privacy",   label: "🛡 Privacy",    desc: "Maximum privacy" },
+    { key: "gaming",    label: "🎮 Gaming",     desc: "Optimize for FPS" },
+  ] as const;
 
   useEffect(() => {
     invoke("check_admin").then((v) => setIsAdmin(v as boolean)).catch(() => {});
@@ -136,9 +134,17 @@ export default function TweaksPage() {
     setSelected(new Set(ids));
   };
 
+  const openSystemRestore = async () => {
+    try {
+      await invoke("apply_tweak", { id: "open_system_restore" });
+    } catch (err: any) {
+      setNotification({ type: "error", msg: err });
+    }
+  };
+
   const applySelected = async () => {
     if (!isAdmin) {
-      setNotification({ type: "error", msg: "Administrator privileges required to apply tweaks." });
+      setNotification({ type: "error", msg: "Admin privileges required." });
       return;
     }
     setIsApplying(true);
@@ -148,12 +154,12 @@ export default function TweaksPage() {
       catch (e) { console.error(`Tweak ${id} failed:`, e); }
     }
     setIsApplying(false);
-    setNotification({ type: "success", msg: `${ok} tweak(s) applied successfully.` });
+    setNotification({ type: "success", msg: `${ok} tweak(s) applied.` });
     setSelected(new Set());
   };
 
   const createRestorePoint = async () => {
-    setNotification({ type: "info", msg: "Creating system restore point..." });
+    setNotification({ type: "info", msg: "Creating restore point..." });
     try {
       const msg: string = await invoke("create_restore_point");
       setNotification({ type: "success", msg });
@@ -168,12 +174,22 @@ export default function TweaksPage() {
       {isAdmin === false && (
         <div className="admin-banner">
           <ShieldAlert size={14} />
-          <span>Run as <strong>Administrator</strong> to apply registry tweaks.</span>
+          <span>{t("dashboard.admin_warn")}</span>
         </div>
       )}
 
       {/* Preset strip */}
       <div className="preset-strip">
+        <button
+          className="preset-btn"
+          onClick={openSystemRestore}
+          style={{ background: "rgba(255,193,7,0.1)", color: "var(--warning)", border: "1px solid rgba(255,193,7,0.2)" }}
+        >
+          <LifeBuoy size={14} /> {t("tweaks.restore_btn")}
+        </button>
+
+        <div className="topbar-divider" style={{ width: 1, height: 24, margin: "0 8px" }} />
+
         {PRESETS.map((p) => (
           <button
             key={p.key}
@@ -207,9 +223,9 @@ export default function TweaksPage() {
         <button
           className="btn btn-secondary btn-sm"
           onClick={createRestorePoint}
-          title="Create a restore point before applying tweaks"
+          title="Create a restore point before applying"
         >
-          <RotateCcw size={13} /> Restore Point
+          <RotateCcw size={13} /> {t("tweaks.create_point")}
         </button>
 
         <button
@@ -218,11 +234,11 @@ export default function TweaksPage() {
           disabled={selected.size === 0 || isApplying}
         >
           {isApplying ? (
-            <><Loader2 size={14} className="animate-spin" /> Applying...</>
+            <><Loader2 size={14} className="animate-spin" /> ...</>
           ) : (
             <>
               <Play size={14} />
-              Apply Tweaks
+              {t("tweaks.apply_btn")}
               {selected.size > 0 && <span className="badge-count">{selected.size}</span>}
             </>
           )}

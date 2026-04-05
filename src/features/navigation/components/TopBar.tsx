@@ -13,29 +13,32 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/hooks/useLanguage";
 
-const TABS = [
-  { icon: LayoutDashboard, label: "Dashboard",  href: "/" },
-  { icon: Trash2,          label: "Cleaner",    href: "/cleaner" },
-  { icon: Package,         label: "Install",     href: "/install" },
-  { icon: Wrench,          label: "Tweaks",      href: "/tweaks" },
-  { icon: Cpu,             label: "AI",          href: "/ai" },
-];
-
-interface TopBarProps {
-  onUpgradeAll?: () => void;
-  isUpgrading?: boolean;
-}
-
-export const TopBar = ({ onUpgradeAll, isUpgrading }: TopBarProps) => {
+export const TopBar = () => {
   const pathname = usePathname();
+  const { language, setLanguage, t } = useLanguage();
+
+  const TABS = [
+    { icon: LayoutDashboard, label: t("nav.dashboard"), href: "/" },
+    { icon: Trash2, label: t("nav.cleaner"), href: "/cleaner" },
+    { icon: Package, label: t("nav.install"), href: "/install" },
+    { icon: Wrench, label: t("nav.tweaks"), href: "/tweaks" },
+    { icon: Cpu, label: t("nav.ai"), href: "/ai" },
+  ];
+
+  const toggleLanguage = () => {
+    setLanguage(language === "pt" ? "en" : "pt");
+  };
 
   return (
     <header className="topbar">
       {/* Brand */}
       <div className="topbar-brand">
         <span className="topbar-brand-name">SEGATT</span>
-        <span className="topbar-brand-badge">v1.0</span>
+        <span className="topbar-brand-badge" style={{ color: "var(--accent)" }}>
+          v1.3.0
+        </span>
       </div>
 
       <div className="topbar-divider" />
@@ -61,15 +64,18 @@ export const TopBar = ({ onUpgradeAll, isUpgrading }: TopBarProps) => {
       {/* Right actions */}
       <div className="topbar-actions">
         <button
-          className="btn btn-secondary btn-sm"
-          onClick={onUpgradeAll}
-          disabled={isUpgrading}
-          aria-label="Upgrade all installed packages"
-          title="Upgrade all installed packages via WinGet"
+          className="btn btn-ghost btn-sm"
+          onClick={toggleLanguage}
+          title={language === "pt" ? "Mudar para Inglês" : "Change to Portuguese"}
+          style={{ gap: 6 }}
         >
-          <RefreshCw size={13} className={isUpgrading ? "animate-spin" : ""} />
-          Upgrade All
+          <Globe size={13} />
+          <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase" }}>
+            {language}
+          </span>
         </button>
+
+        <div className="topbar-divider" style={{ height: 16 }} />
 
         <Link
           href="/ai"

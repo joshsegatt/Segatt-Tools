@@ -177,6 +177,14 @@ pub async fn apply_tweak(id: String) -> Result<String, String> {
         // Restore point: delegate to dedicated command
         "create_restore_point" => return create_restore_point().await,
 
+        // System Restore UI
+        "open_system_restore" => {
+            return silent_cmd("rstrui.exe")
+                .spawn()
+                .map(|_| "System Restore opened.".to_string())
+                .map_err(|e| format!("Failed to open System Restore: {}", e));
+        },
+
         _ => return Err(format!("Unknown tweak: '{}'", id)),
     };
 

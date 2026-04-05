@@ -2,10 +2,10 @@
 
 import React, { useState, useMemo } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   Search,
   Download,
-  Trash2,
   Loader2,
   Globe,
   Code2,
@@ -35,6 +35,7 @@ interface AppRowProps {
 }
 
 const AppRow = ({ app, isSelected, status, onToggle, onInstall }: AppRowProps) => {
+  const { t } = useLanguage();
   const isInstalling = status === "installing";
   const isInstalled  = status === "installed";
 
@@ -47,7 +48,6 @@ const AppRow = ({ app, isSelected, status, onToggle, onInstall }: AppRowProps) =
       tabIndex={0}
       onKeyDown={(e) => e.key === " " && onToggle()}
     >
-      {/* Checkbox */}
       <div className="item-checkbox" aria-hidden="true">
         {isSelected && (
           <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -56,12 +56,10 @@ const AppRow = ({ app, isSelected, status, onToggle, onInstall }: AppRowProps) =
         )}
       </div>
 
-      {/* Name */}
       <span className="item-name" title={app.description}>
         {app.name}
       </span>
 
-      {/* Tooltip */}
       <div className="tooltip-wrap" onClick={(e) => e.stopPropagation()}>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-muted)", flexShrink: 0 }}>
           <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
@@ -69,15 +67,14 @@ const AppRow = ({ app, isSelected, status, onToggle, onInstall }: AppRowProps) =
         <div className="tooltip-box">{app.description}</div>
       </div>
 
-      {/* Install button */}
       <div className="item-action" onClick={(e) => { e.stopPropagation(); onInstall(); }}>
         {isInstalling ? (
           <Loader2 size={13} className="animate-spin" style={{ color: "var(--accent)" }} />
         ) : isInstalled ? (
-          <span style={{ fontSize: 11, color: "var(--success)", fontWeight: 600 }}>✓ Done</span>
+          <span style={{ fontSize: 11, color: "var(--success)", fontWeight: 600 }}>✓ {t("install.status_done")}</span>
         ) : (
           <button className="btn btn-primary btn-sm" aria-label={`Install ${app.name}`}>
-            <Download size={11} /> Install
+            <Download size={11} /> {t("install.install_btn")}
           </button>
         )}
       </div>
@@ -86,11 +83,10 @@ const AppRow = ({ app, isSelected, status, onToggle, onInstall }: AppRowProps) =
 };
 
 // ─── Main Page ───────────────────────────────────────────────
-type AppStatusMap = Record<string, InstalledStatus>;
-
 export default function InstallPage() {
+  const { t } = useLanguage();
   const [selected, setSelected]   = useState<Set<string>>(new Set());
-  const [statusMap, setStatusMap] = useState<AppStatusMap>({});
+  const [statusMap, setStatusMap] = useState<Record<string, InstalledStatus>>({});
   const [search, setSearch]       = useState("");
   const [isInstalling, setIsInstalling] = useState(false);
 
@@ -103,17 +99,13 @@ export default function InstallPage() {
     });
   };
 
-  const setStatus = (id: string, status: InstalledStatus) => {
-    setStatusMap((prev) => ({ ...prev, [id]: status }));
-  };
-
   const installSingle = async (id: string) => {
-    setStatus(id, "installing");
+    setStatusMap((prev) => ({ ...prev, [id]: "installing" }));
     try {
       await invoke("install_package_stream", { packageId: id });
-      setStatus(id, "installed");
+      setStatusMap((prev) => ({ ...prev, [id]: "installed" }));
     } catch {
-      setStatus(id, "error");
+      setStatusMap((prev) => ({ ...prev, [id]: "error" }));
     }
   };
 
@@ -132,40 +124,31 @@ export default function InstallPage() {
     setSelected(new Set(allIds));
   };
 
-  // Filter by search
   const filteredCategories = useMemo(() => {
     if (!search.trim()) return APP_CATEGORIES;
     const q = search.toLowerCase();
     return APP_CATEGORIES.map((cat) => ({
       ...cat,
       apps: cat.apps.filter(
-        (app) =>
-          app.name.toLowerCase().includes(q) ||
-          app.description.toLowerCase().includes(q)
+        (app) => app.name.toLowerCase().includes(q) || app.description.toLowerCase().includes(q)
       ),
     })).filter((cat) => cat.apps.length > 0);
   }, [search]);
 
   return (
     <div className="checklist-page fade-in">
-      {/* Action Bar */}
       <div className="action-bar">
         <div className="search-wrap" style={{ width: 260 }}>
           <Search size={14} className="search-icon" />
           <input
             className="search-input"
             type="text"
-            placeholder="Search apps..."
+            placeholder={t("install.search_placeholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            aria-label="Search applications"
           />
           {search && (
-            <button
-              onClick={() => setSearch("")}
-              style={{ position: "absolute", right: 8, color: "var(--text-muted)" }}
-              aria-label="Clear search"
-            >
+            <button onClick={() => setSearch("")} style={{ position: "absolute", right: 8, color: "var(--text-muted)" }}>
               <X size={13} />
             </button>
           )}
@@ -173,42 +156,36 @@ export default function InstallPage() {
 
         <div className="topbar-divider" />
 
-        {/* Selection controls */}
         <div className="action-bar-section">
           <button className="btn btn-ghost btn-sm" onClick={selectAll}>
-            <CheckCheck size={13} /> Select All
+            <CheckCheck size={13} /> {t("tweaks.select_all")}
           </button>
           {selected.size > 0 && (
             <button className="btn btn-ghost btn-sm" onClick={() => setSelected(new Set())}>
-              <X size={13} /> Clear
+              <X size={13} /> {t("tweaks.clear_btn")}
             </button>
           )}
         </div>
 
         <div className="action-bar-spacer" />
 
-        {/* Install selected */}
         <button
           className="btn btn-primary"
           onClick={installSelected}
           disabled={selected.size === 0 || isInstalling}
-          aria-label={`Install ${selected.size} selected apps`}
         >
           {isInstalling ? (
-            <><Loader2 size={14} className="animate-spin" /> Installing...</>
+            <><Loader2 size={14} className="animate-spin" /> ...</>
           ) : (
             <>
               <Download size={14} />
-              Install Selected
-              {selected.size > 0 && (
-                <span className="badge-count">{selected.size}</span>
-              )}
+              {t("install.install_selected")}
+              {selected.size > 0 && <span className="badge-count">{selected.size}</span>}
             </>
           )}
         </button>
       </div>
 
-      {/* Categories Grid */}
       <div className="checklist-grid">
         {filteredCategories.map((cat) => {
           const Icon = ICON_MAP[cat.icon] ?? Wrench;
@@ -221,9 +198,7 @@ export default function InstallPage() {
                   <Icon size={13} />
                   {cat.label}
                 </div>
-                {catSelected > 0 && (
-                  <span className="badge-count">{catSelected}</span>
-                )}
+                {catSelected > 0 && <span className="badge-count">{catSelected}</span>}
               </div>
 
               {cat.apps.map((app) => (
@@ -243,8 +218,7 @@ export default function InstallPage() {
         {filteredCategories.length === 0 && (
           <div className="empty-state" style={{ gridColumn: "1/-1" }}>
             <div className="empty-state-icon"><Search size={40} /></div>
-            <div className="empty-state-title">No apps found for "{search}"</div>
-            <div className="empty-state-sub">Try a different search term</div>
+            <div className="empty-state-title">{t("install.no_apps")} "{search}"</div>
           </div>
         )}
       </div>

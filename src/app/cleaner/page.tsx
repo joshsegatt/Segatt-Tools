@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   Trash2,
   Zap,
@@ -9,52 +10,61 @@ import {
   RotateCcw,
   AlertTriangle,
   History,
-  CheckCircle,
   Play,
+  LifeBuoy,
 } from "lucide-react";
 
-const CLEANUP_TASKS = [
-  {
-    id: "clean_temp",
-    name: "Temporary Files",
-    description: "Remove %TEMP% and system temporary files. Safely reclaims space.",
-    category: "Basic",
-  },
-  {
-    id: "clean_prefetch",
-    name: "Prefetch Files",
-    description: "Clears Prefetch folder. Recommended if performance seems inconsistent.",
-    category: "System",
-  },
-  {
-    id: "flush_dns",
-    name: "Clear DNS Cache",
-    description: "Flushes DNS revolver cache. Helps with network latency and resolution.",
-    category: "Optimization",
-  },
-  {
-    id: "clean_windows_update",
-    name: "Windows Update Cache",
-    description: "Deletes old update files. May free gigabytes of space.",
-    category: "System",
-  },
-  {
-    id: "clean_shader_cache",
-    name: "DirectX Shader Cache",
-    description: "Gaming: Resets DirectX shader cache to fix stuttering/textures bugs.",
-    category: "Gaming",
-  },
-];
-
 export default function CleanerPage() {
+  const { t } = useLanguage();
   const [running, setRunning] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, string>>({});
   const [safetyConfirmed, setSafetyConfirmed] = useState(false);
   const [restoring, setRestoring] = useState(false);
 
+  const CLEANUP_TASKS = [
+    {
+      id: "clean_temp",
+      name: t("cleaner.items.temp"),
+      description: "Remove %TEMP% and system temporary files.",
+      category: "Basic",
+    },
+    {
+      id: "clean_prefetch",
+      name: t("cleaner.items.prefetch"),
+      description: "Clears Prefetch folder for consistency.",
+      category: "System",
+    },
+    {
+      id: "flush_dns",
+      name: t("cleaner.items.dns"),
+      description: "Flushes DNS revolver cache for network latency.",
+      category: "Optimization",
+    },
+    {
+      id: "clean_windows_update",
+      name: t("cleaner.items.win_update"),
+      description: "Deletes old update files and logs.",
+      category: "System",
+    },
+    {
+      id: "clean_shader_cache",
+      name: t("cleaner.items.shader"),
+      description: "Resets DirectX shader cache to fix stuttering.",
+      category: "Gaming",
+    },
+  ];
+
+  const openSystemRestore = async () => {
+    try {
+      await invoke("apply_tweak", { id: "open_system_restore" });
+    } catch (err: any) {
+      alert(err);
+    }
+  };
+
   const runTask = async (id: string) => {
     if (!safetyConfirmed && id !== "flush_dns") {
-       alert("Safety First: It is highly recommended to create a Restore Point before deep cleaning.");
+       alert(t("cleaner.safety_first") + ": " + t("cleaner.safety_desc"));
        return;
     }
     setRunning(id);
@@ -83,7 +93,7 @@ export default function CleanerPage() {
 
   const runAll = async () => {
     if (!safetyConfirmed) {
-      if (confirm("Create Restore Point before starting the full cleanup? Highly recommended.")) {
+      if (confirm(t("cleaner.safety_desc"))) {
         await createRestorePoint();
       } else {
         return;
@@ -96,25 +106,38 @@ export default function CleanerPage() {
 
   return (
     <div className="fade-in">
-      {/* Header with Safety Banner */}
+      {/* Header with Safety Actions */}
       <div className="section-header" style={{ marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 4 }}>Segatt <span style={{ color: "var(--accent)" }}>Cleaner</span></h1>
-          <p style={{ color: "var(--text-muted)", fontSize: 13 }}>Gamer-focused system maintenance and junk removal.</p>
+          <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 4 }}>
+            Segatt <span style={{ color: "var(--accent)" }}>Cleaner</span>
+          </h1>
+          <p style={{ color: "var(--text-muted)", fontSize: 13 }}>{t("cleaner.subtitle")}</p>
         </div>
         
-        <div style={{ display: "flex", gap: 12 }}>
-           <button 
-             className={`btn ${safetyConfirmed ? 'btn-secondary' : 'btn-primary'}`}
-             onClick={createRestorePoint}
-             disabled={restoring}
-           >
-             <History size={14} className={restoring ? "animate-spin" : ""} />
-             {restoring ? "Creating..." : "Create Restore Point"}
-           </button>
-           <button className="btn btn-primary" onClick={runAll} disabled={!!running}>
-             <Play size={14} /> Run All Cleanup
-           </button>
+        <div style={{ display: "flex", gap: 8 }}>
+            <button 
+              className="btn btn-ghost btn-sm"
+              onClick={openSystemRestore}
+              title={t("cleaner.restore_btn")}
+              style={{ border: "1px solid var(--border)", color: "var(--warning)" }}
+            >
+              <LifeBuoy size={14} />
+              {t("cleaner.restore_btn")}
+            </button>
+
+            <button 
+              className={`btn btn-sm ${safetyConfirmed ? 'btn-secondary' : 'btn-primary'}`}
+              onClick={createRestorePoint}
+              disabled={restoring}
+            >
+              <History size={14} className={restoring ? "animate-spin" : ""} />
+              {restoring ? "..." : t("tweaks.create_point")}
+            </button>
+
+            <button className="btn btn-primary btn-sm" onClick={runAll} disabled={!!running}>
+              <Play size={14} /> {t("cleaner.clean_btn")}
+            </button>
         </div>
       </div>
 
@@ -122,12 +145,12 @@ export default function CleanerPage() {
         <div className="alert-banner" style={{ background: "rgba(255,193,7,0.1)", border: "1px solid rgba(255,193,7,0.2)", padding: 12, borderRadius: 8, marginBottom: 24, display: "flex", alignItems: "center", gap: 12 }}>
           <AlertTriangle size={18} style={{ color: "var(--accent)" }} />
           <span style={{ fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>
-            System Protection Recommended: Create a Restore Point before running system-level cleaning.
+            {t("cleaner.safety_desc")}
           </span>
         </div>
       )}
 
-      {/* Grid Layout (Same as Tweaks/Install for consistency) */}
+      {/* Grid Layout */}
       <div className="checklist-grid" style={{ alignItems: "start" }}>
         {["Basic", "System", "Optimization", "Gaming"].map(category => (
           <div key={category} className="category-column">

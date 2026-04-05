@@ -13,6 +13,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface SystemStats {
   cpu_usage: number;
@@ -21,6 +22,7 @@ interface SystemStats {
 }
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
@@ -59,7 +61,7 @@ export default function Dashboard() {
         <div className="admin-banner">
           <AlertTriangle size={14} />
           <span>
-            Run as <strong>Administrator</strong> to apply tweaks and registry changes.
+            {t("dashboard.admin_warn")}
           </span>
         </div>
       )}
@@ -69,7 +71,7 @@ export default function Dashboard() {
         <div className="stat-card">
           <div className="stat-label">
             <Activity size={12} />
-            CPU Usage
+            {t("dashboard.cpu_usage")}
           </div>
           <div className="stat-value">{stats ? `${cpuPct}%` : "—"}</div>
           <div className="stat-bar-track">
@@ -91,7 +93,7 @@ export default function Dashboard() {
         <div className="stat-card">
           <div className="stat-label">
             <Cpu size={12} />
-            RAM
+            {t("dashboard.ram")}
           </div>
           <div className="stat-value">{stats ? `${ramPct}%` : "—"}</div>
           <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
@@ -116,20 +118,20 @@ export default function Dashboard() {
         <div className="stat-card">
           <div className="stat-label">
             <Shield size={12} />
-            Privacy
+            {t("dashboard.privacy")}
           </div>
           <div className="stat-value" style={{ color: "var(--success)", fontSize: 20 }}>
-            Protected
+            {t("dashboard.privacy_status")}
           </div>
           <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-            Zero telemetry mode
+            {t("dashboard.zero_telemetry")}
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-label">
             <CheckCircle2 size={12} />
-            Admin
+            {t("dashboard.admin")}
           </div>
           <div
             className="stat-value"
@@ -143,10 +145,14 @@ export default function Dashboard() {
               fontSize: 18,
             }}
           >
-            {isAdmin === null ? "Checking..." : isAdmin ? "Elevated" : "Standard"}
+            {isAdmin === null 
+              ? t("dashboard.admin_checking") 
+              : isAdmin 
+                ? t("dashboard.admin_elevated") 
+                : t("dashboard.admin_standard")}
           </div>
           <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-            {isAdmin ? "Full access granted" : "Limited functionality"}
+            {isAdmin ? t("dashboard.admin_full") : t("dashboard.admin_limited")}
           </div>
         </div>
       </div>
@@ -162,7 +168,7 @@ export default function Dashboard() {
           color: "var(--text-muted)",
         }}
       >
-        Quick Actions
+        {t("dashboard.quick_actions")}
       </div>
 
       <div className="quick-grid">
@@ -172,13 +178,13 @@ export default function Dashboard() {
               <Package size={20} />
             </div>
             <div>
-              <div className="quick-card-title">Install Software</div>
+              <div className="quick-card-title">{t("dashboard.install_title")}</div>
               <div className="quick-card-desc">
-                Browse 40+ pre-curated apps by category. Select multiple and install in one click.
+                {t("dashboard.install_desc")}
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>
-              Open Installer <ArrowRight size={12} />
+              {t("dashboard.open_installer")} <ArrowRight size={12} />
             </div>
           </div>
         </Link>
@@ -189,13 +195,13 @@ export default function Dashboard() {
               <Wrench size={20} />
             </div>
             <div>
-              <div className="quick-card-title">System Tweaks</div>
+              <div className="quick-card-title">{t("dashboard.tweaks_title")}</div>
               <div className="quick-card-desc">
-                Privacy, performance and interface tweaks. Apply presets or select individually.
+                {t("dashboard.tweaks_desc")}
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>
-              Open Tweaks <ArrowRight size={12} />
+              {t("dashboard.open_tweaks")} <ArrowRight size={12} />
             </div>
           </div>
         </Link>
@@ -206,13 +212,13 @@ export default function Dashboard() {
               <Cpu size={20} />
             </div>
             <div>
-              <div className="quick-card-title">AI Diagnostics</div>
+              <div className="quick-card-title">{t("dashboard.ai_title")}</div>
               <div className="quick-card-desc">
-                Local AI analyzes your hardware and recommends optimizations. Zero cloud, zero cost.
+                {t("dashboard.ai_desc")}
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>
-              Open AI <ArrowRight size={12} />
+              {t("dashboard.open_ai")} <ArrowRight size={12} />
             </div>
           </div>
         </Link>

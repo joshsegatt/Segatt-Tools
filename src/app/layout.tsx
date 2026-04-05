@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { TopBar } from "@/features/navigation/components/TopBar";
+import { LanguageProvider } from "@/hooks/useLanguage";
 
 export const metadata: Metadata = {
   title: "Segatt Tools — Elite Windows System Utility",
@@ -15,12 +16,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="app-shell">
-          <TopBar />
-          <main className="content-area">
-            {children}
-          </main>
-        </div>
+        <LanguageProvider>
+          <div className="app-shell">
+            <TopBar />
+            <main className="content-area">
+              {children}
+            </main>
+          </div>
+        </LanguageProvider>
       </body>
     </html>
   );

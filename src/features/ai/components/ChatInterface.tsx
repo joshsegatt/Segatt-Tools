@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Send, Bot, User, Loader2, Cpu } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -10,16 +11,21 @@ interface Message {
 }
 
 export const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hello! I'm the Segatt AI assistant. I analyze your hardware in real-time and suggest system optimizations. How can I help?",
-    },
-  ]);
+  const { t, language } = useLanguage();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput]       = useState("");
   const [loading, setLoading]   = useState(false);
   const scrollRef                = useRef<HTMLDivElement>(null);
+
+  // Initialize with localized greeting
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([{
+        role: "assistant",
+        content: t("ai.greeting") || (language === "pt" ? "Olá! Sou a Inteligência da Segatt Tools. Como posso ajudar?" : "Hello! I am Segatt Tools Intelligence. How can I help?")
+      }]);
+    }
+  }, [language]);
 
   useEffect(() => {
     if (scrollRef.current)
@@ -36,10 +42,13 @@ export const ChatInterface = () => {
     setLoading(true);
 
     try {
-      const response: string = await invoke("chat_with_segatt_ai", { message: msg });
+      const response: string = await invoke("chat_with_segatt_ai", { 
+        message: msg,
+        language: language 
+      });
       setMessages((p) => [...p, { role: "assistant", content: response }]);
     } catch {
-      setMessages((p) => [...p, { role: "assistant", content: "I encountered an error. Please try again." }]);
+      setMessages((p) => [...p, { role: "assistant", content: t("common.error") }]);
     } finally {
       setLoading(false);
     }
@@ -62,7 +71,7 @@ export const ChatInterface = () => {
           <div style={{ fontSize: 13, fontWeight: 700 }}>Segatt AI</div>
           <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, color: "var(--success)", fontWeight: 600 }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--success)" }} />
-            Local Processing — Zero Cloud
+            {t("ai.local_notice_short") || "Local Processing"}
           </div>
         </div>
       </div>
@@ -89,6 +98,7 @@ export const ChatInterface = () => {
                 background: msg.role === "user" ? "var(--accent)" : "var(--bg-surface)",
                 color: msg.role === "user" ? "white" : "var(--text-secondary)",
                 border: msg.role === "user" ? "none" : "1px solid var(--border)",
+                whiteSpace: "pre-wrap"
               }}
             >
               {msg.content}
@@ -103,7 +113,7 @@ export const ChatInterface = () => {
         {loading && (
           <div style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--text-muted)", fontSize: 12 }}>
             <Loader2 size={13} className="animate-spin" style={{ color: "var(--accent)" }} />
-            Analyzing your system...
+            {t("ai.analyzing") || "Analyzing..."}
           </div>
         )}
       </div>
@@ -115,7 +125,7 @@ export const ChatInterface = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about your system..."
+            placeholder={t("ai.placeholder")}
             disabled={loading}
             style={{
               flex: 1, padding: "8px 14px", borderRadius: 6,
@@ -134,7 +144,7 @@ export const ChatInterface = () => {
           </button>
         </form>
         <p style={{ textAlign: "center", marginTop: 6, fontSize: 10, color: "var(--text-muted)" }}>
-          All processing happens locally. Your data never leaves this machine.
+          {t("ai.local_notice")}
         </p>
       </div>
     </div>

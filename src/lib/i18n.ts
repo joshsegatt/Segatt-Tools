@@ -1,0 +1,209 @@
+export type Language = "pt" | "en";
+
+export const translations = {
+  pt: {
+    // Navigation
+    nav: {
+      dashboard: "Início",
+      cleaner: "Limpeza",
+      install: "Instalação",
+      tweaks: "Ajustes",
+      ai: "Segatt AI",
+    },
+    // Dashboard
+    // Dashboard
+    dashboard: {
+      admin_warn: "Execute como Administrador para aplicar ajustes de registro.",
+      cpu_usage: "Uso de CPU",
+      ram: "Memória RAM",
+      privacy: "Privacidade",
+      privacy_status: "Protegido",
+      zero_telemetry: "Modo telemetria zero",
+      admin: "Privilégio",
+      admin_checking: "Verificando...",
+      admin_elevated: "Elevado",
+      admin_standard: "Padrão",
+      admin_full: "Acesso total concedido",
+      admin_limited: "Funcionalidade limitada",
+      quick_actions: "Ações Rápidas",
+      install_title: "Instalar Software",
+      install_desc: "Navegue por 40+ apps. Selecione e instale em um clique.",
+      tweaks_title: "Ajustes de Sistema",
+      tweaks_desc: "Performance, privacidade e interface. Aplique presets agora.",
+      ai_title: "Diagnóstico IA",
+      ai_desc: "IA local analisa seu hardware e recomenda otimizações.",
+      open_installer: "Abrir Instalador",
+      open_tweaks: "Abrir Ajustes",
+      open_ai: "Abrir AI",
+    },
+    // Cleaner
+    cleaner: {
+      title: "Segatt Cleaner",
+      subtitle: "Limpeza profunda para manter o FPS no topo.",
+      restore_btn: "Restaurar Sistema",
+      analyze_btn: "Analisar Sistema",
+      clean_btn: "Executar Limpeza Gamer",
+      cleaning: "Limpando...",
+      success: "Sistema otimizado com sucesso!",
+      safety_first: "Segurança Primeiro",
+      safety_desc: "Um ponto de restauração é recomendado antes de qualquer limpeza.",
+      items: {
+        temp: "Arquivos Temporários",
+        win_update: "Cache do Windows Update",
+        prefetch: "Arquivos Prefetch",
+        dns: "Cache de DNS",
+        shader: "Cache de Shaders DirectX",
+      },
+    },
+    // Install
+    install: {
+      title: "Segatt Install",
+      subtitle: "Instale seus apps essenciais sem instaladores chatos.",
+      search_placeholder: "Pesquisar aplicativos...",
+      install_btn: "Instalar",
+      status_done: "Pronto",
+      install_selected: "Instalar Selecionados",
+      no_apps: "Nenhum aplicativo encontrado para",
+    },
+    // Tweaks
+    tweaks: {
+      title: "System Tweaks",
+      subtitle: "Otimize cada detalhe do seu Windows.",
+      restore_btn: "Restaurar Sistema",
+      create_point: "Criar Ponto de Restauração",
+      apply_btn: "Aplicar Ajuste",
+      select_all: "Sel. Tudo",
+      clear_btn: "Limpar",
+      categories: {
+        privacy: "Privacidade",
+        performance: "Performance",
+        interface: "Interface",
+        system: "Sistema",
+      },
+    },
+    // AI
+    ai: {
+      title: "Segatt AI Assistant",
+      subtitle: "Hardware e performance analisados localmente.",
+      placeholder: "Pergunte sobre seu hardware ou otimizações...",
+      local_notice: "Todo o processamento é local. Seus dados nunca saem desta máquina.",
+      local_notice_short: "Processamento Local — Zero Nuvem",
+      greeting: "Olá! Sou a Inteligência da Segatt Tools. Posso analisar seu hardware em tempo real, identificar gargalos de CPU/RAM e sugerir ajustes específicos. Em que posso ajudar?",
+      analyzing: "Analisando seu sistema...",
+      system_status: "Status do Sistema",
+      hardware_info: "Dados de Hardware",
+      performance_tips: "Dicas de Performance",
+      analyze_btn: "Analisar Hardware",
+      recommendations: "Recomendações da IA",
+      optimize_btn: "Otimizar Agora",
+    },
+    // Common
+    common: {
+      loading: "Carregando...",
+      error: "Erro inesperado",
+      close: "Fechar",
+    }
+  },
+  en: {
+    // Navigation
+    nav: {
+      dashboard: "Home",
+      cleaner: "Cleaner",
+      install: "Installer",
+      tweaks: "Tweaks",
+      ai: "Segatt AI",
+    },
+    // Dashboard
+    dashboard: {
+      admin_warn: "Run as Administrator to apply tweaks and registry changes.",
+      cpu_usage: "CPU Usage",
+      ram: "RAM Memory",
+      privacy: "Privacy",
+      privacy_status: "Protected",
+      zero_telemetry: "Zero telemetry mode",
+      admin: "Privilege",
+      admin_checking: "Checking...",
+      admin_elevated: "Elevated",
+      admin_standard: "Standard",
+      admin_full: "Full access granted",
+      admin_limited: "Limited functionality",
+      quick_actions: "Quick Actions",
+      install_title: "Install Software",
+      install_desc: "Browse 40+ apps. Select and install in one click.",
+      tweaks_title: "System Tweaks",
+      tweaks_desc: "Performance, privacy and interface. Apply presets now.",
+      ai_title: "AI Diagnostics",
+      ai_desc: "Local AI analyzes hardware and recommends optimizations.",
+      open_installer: "Open Installer",
+      open_tweaks: "Open Tweaks",
+      open_ai: "Open AI",
+    },
+    // Cleaner
+    cleaner: {
+      title: "Segatt Cleaner",
+      subtitle: "Deep cleaning to keep your FPS at the top.",
+      restore_btn: "Restore System",
+      analyze_btn: "Analyze System",
+      clean_btn: "Run Gamer Cleanup",
+      cleaning: "Cleaning...",
+      success: "System optimized successfully!",
+      safety_first: "Safety First",
+      safety_desc: "A restore point is recommended before any cleaning.",
+      items: {
+        temp: "Temporary Files",
+        win_update: "Windows Update Cache",
+        prefetch: "Prefetch Files",
+        dns: "DNS Cache",
+        shader: "DirectX Shader Cache",
+      },
+    },
+    // Install
+    install: {
+      title: "Segatt Install",
+      subtitle: "Install essential apps without annoying installers.",
+      search_placeholder: "Search apps...",
+      install_btn: "Install",
+      status_done: "Done",
+      install_selected: "Install Selected",
+      no_apps: "No apps found for",
+    },
+    // Tweaks
+    tweaks: {
+      title: "System Tweaks",
+      subtitle: "Optimize every detail of your Windows.",
+      restore_btn: "Restore System",
+      create_point: "Create Restore Point",
+      apply_btn: "Apply Tweak",
+      select_all: "Select All",
+      clear_btn: "Clear",
+      categories: {
+        privacy: "Privacy",
+        performance: "Performance",
+        interface: "Interface",
+        system: "System",
+      },
+    },
+    // AI
+    ai: {
+      title: "Segatt AI Assistant",
+      subtitle: "Hardware and performance analyzed locally.",
+      placeholder: "Ask about your hardware or optimizations...",
+      local_notice: "All processing happens locally. Your data never leaves this machine.",
+      local_notice_short: "Local Processing — Zero Cloud",
+      greeting: "Hello! I am Segatt Tools Intelligence. I can analyze your hardware in real-time, identify CPU/RAM bottlenecks, and suggest specific tweaks. How can I assist you?",
+      analyzing: "Analyzing your system...",
+      system_status: "System Status",
+      hardware_info: "Hardware Info",
+      performance_tips: "Performance Tips",
+      analyze_btn: "Analyze Hardware",
+      recommendations: "AI Recommendations",
+      optimize_btn: "Optimize Now",
+    },
+    // Common
+    common: {
+      loading: "Loading...",
+      error: "Unexpected error",
+      close: "Close",
+    }
+  },
+};
