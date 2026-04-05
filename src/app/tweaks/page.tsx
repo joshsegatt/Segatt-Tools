@@ -2,229 +2,267 @@
 
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { 
-  Zap, 
-  CheckCircle2, 
+import {
   Loader2,
-  RotateCcw,
-  AlertTriangle,
   Play,
   ShieldAlert,
-  Info
+  RotateCcw,
+  CheckCheck,
+  X,
+  Zap,
+  Shield,
+  Monitor,
+  Settings,
 } from "lucide-react";
-import { TweakCard } from "@/features/tweaks/components/TweakCard";
 
-interface Tweak {
+// ─── Tweak Data ──────────────────────────────────────────────
+interface TweakDef {
   id: string;
   name: string;
   description: string;
-  category: string;
+  column: "privacy" | "performance" | "interface" | "system";
+  preset?: ("essential" | "privacy" | "gaming")[];
 }
 
+const TWEAKS: TweakDef[] = [
+  // Privacy column
+  { id: "disable_telemetry",       name: "Disable Telemetry",            description: "Stops Windows from sending diagnostic and usage data to Microsoft servers.",       column: "privacy", preset: ["essential", "privacy"] },
+  { id: "disable_cortana",         name: "Disable Cortana",              description: "Disables the Cortana virtual assistant and its background data collection.",         column: "privacy", preset: ["privacy"] },
+  { id: "disable_activity_feed",   name: "Disable Activity Feed",        description: "Prevents Windows from tracking your activity history across devices.",               column: "privacy", preset: ["privacy"] },
+  { id: "remove_bing_search",      name: "Remove Bing from Search",      description: "Removes Bing web results from the Windows Start Menu search.",                       column: "privacy", preset: ["essential", "privacy"] },
+  { id: "disable_location",        name: "Disable Location Tracking",    description: "Prevents apps from accessing your device location.",                                  column: "privacy", preset: ["privacy"] },
+  { id: "disable_advertising_id",  name: "Disable Advertising ID",       description: "Stops advertisers from tracking your usage patterns across apps.",                    column: "privacy", preset: ["essential", "privacy"] },
+  { id: "disable_wifi_sense",      name: "Disable WiFi Sense",           description: "Prevents Windows from automatically connecting to shared networks.",                  column: "privacy" },
+  { id: "disable_feedback",        name: "Disable Feedback Prompts",     description: "Stops Windows from asking for feedback and sending it to Microsoft.",                 column: "privacy", preset: ["privacy"] },
+
+  // Performance column
+  { id: "optimize_hpet",           name: "Optimize HPET",                description: "Disables High Precision Event Timer to reduce CPU overhead in some configurations.", column: "performance", preset: ["gaming"] },
+  { id: "disable_game_bar",        name: "Disable Game Bar",             description: "Removes the Xbox Game Bar overlay to free resources for gaming.",                    column: "performance", preset: ["gaming"] },
+  { id: "high_performance_plan",   name: "Set High Performance Plan",    description: "Switches Windows power plan to maximum performance mode.",                            column: "performance", preset: ["essential", "gaming"] },
+  { id: "disable_superfetch",      name: "Disable SysMain (Superfetch)", description: "Disables the service that pre-loads apps — recommended for SSDs.",                  column: "performance", preset: ["essential"] },
+  { id: "disable_search_indexing", name: "Disable Search Indexing",      description: "Stops background drive indexing. Reduces disk I/O on SSDs.",                         column: "performance" },
+  { id: "disable_visual_fx",       name: "Disable Visual Effects",       description: "Turns off animations and transparency effects for maximum responsiveness.",           column: "performance", preset: ["essential"] },
+  { id: "set_dns_cloudflare",      name: "Set DNS to Cloudflare",        description: "Changes DNS to 1.1.1.1 and 1.0.0.1 for faster, more private browsing.",              column: "performance" },
+
+  // Interface column
+  { id: "dark_mode",               name: "Enable Dark Mode",             description: "Forces dark mode for apps and system UI.",                                            column: "interface", preset: ["essential"] },
+  { id: "classic_context_menu",    name: "Classic Context Menu",         description: "Restores the full Windows 10-style right-click context menu in Windows 11.",          column: "interface", preset: ["essential"] },
+  { id: "show_file_extensions",    name: "Show File Extensions",         description: "Makes hidden file extensions (e.g., .exe, .pdf) visible in Explorer.",               column: "interface", preset: ["essential"] },
+  { id: "show_hidden_files",       name: "Show Hidden Files",            description: "Reveals hidden files and folders in File Explorer.",                                  column: "interface" },
+  { id: "disable_mouse_accel",     name: "Disable Mouse Acceleration",   description: "Removes mouse pointer precision for consistent cursor movement.",                    column: "interface", preset: ["gaming"] },
+
+  // System column
+  { id: "enable_long_paths",       name: "Enable Long File Paths",       description: "Removes the 260-character path length limit in Windows.",                            column: "system", preset: ["essential"] },
+  { id: "enable_f8_boot",          name: "Enable F8 Boot Menu",          description: "Restores the ability to access boot options by pressing F8 on startup.",             column: "system" },
+  { id: "disable_fast_startup",    name: "Disable Fast Startup",         description: "Ensures a clean shutdown each time instead of a hybrid sleep state.",                column: "system" },
+  { id: "disable_windows_update",  name: "Pause Windows Updates",        description: "Pauses Windows Update for 1 year. Updates can be re-enabled anytime.",              column: "system" },
+  { id: "create_restore_point",    name: "Create Restore Point",         description: "Creates a System Restore Point before making changes. Highly recommended.",          column: "system", preset: ["essential"] },
+];
+
+const COLUMNS: { key: TweakDef["column"]; label: string; icon: React.ElementType }[] = [
+  { key: "privacy",     label: "Privacy",     icon: Shield },
+  { key: "performance", label: "Performance", icon: Zap },
+  { key: "interface",   label: "Interface",   icon: Monitor },
+  { key: "system",      label: "System",      icon: Settings },
+];
+
+const PRESETS = [
+  { key: "essential", label: "⚡ Essential Tweaks",  desc: "Safe, recommended changes for all users" },
+  { key: "privacy",   label: "🛡 Privacy Pack",       desc: "Maximum privacy with minimal impact" },
+  { key: "gaming",    label: "🎮 Gaming Mode",        desc: "Optimize for gaming performance" },
+] as const;
+
+// ─── Tweak Row Component ────────────────────────────────────
+interface TweakRowProps {
+  tweak: TweakDef;
+  isSelected: boolean;
+  onToggle: () => void;
+}
+
+const TweakRow = ({ tweak, isSelected, onToggle }: TweakRowProps) => (
+  <div
+    className={`item-row ${isSelected ? "selected" : ""}`}
+    onClick={onToggle}
+    role="checkbox"
+    aria-checked={isSelected}
+    tabIndex={0}
+    onKeyDown={(e) => e.key === " " && onToggle()}
+  >
+    <div className="item-checkbox" aria-hidden="true">
+      {isSelected && (
+        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+    </div>
+
+    <span className="item-name">{tweak.name}</span>
+
+    <div className="tooltip-wrap">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-muted)", flexShrink: 0, cursor: "help" }}>
+        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+      </svg>
+      <div className="tooltip-box">{tweak.description}</div>
+    </div>
+  </div>
+);
+
+// ─── Main Page ───────────────────────────────────────────────
 export default function TweaksPage() {
-  const [allTweaks, setAllTweaks] = useState<Tweak[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState("Privacidade");
-  const [isLoading, setIsLoading] = useState(true);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [isAdmin, setIsAdmin]   = useState<boolean | null>(null);
   const [isApplying, setIsApplying] = useState(false);
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [notification, setNotification] = useState<{ type: "success" | "error" | "info", message: string } | null>(null);
+  const [notification, setNotification] = useState<{ type: "success"|"error"|"info"; msg: string } | null>(null);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const [tweaksRes, adminRes] = await Promise.all([
-          invoke("get_tweaks") as Promise<Tweak[]>,
-          invoke("check_admin") as Promise<boolean>
-        ]);
-        setAllTweaks(tweaksRes);
-        setIsAdmin(adminRes);
-      } catch (err: any) {
-        setNotification({ type: "error", message: "Erro ao inicializar motor de tweaks." });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    init();
+    invoke("check_admin").then((v) => setIsAdmin(v as boolean)).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => setNotification(null), 5000);
-      return () => clearTimeout(timer);
-    }
+    if (!notification) return;
+    const t = setTimeout(() => setNotification(null), 5000);
+    return () => clearTimeout(t);
   }, [notification]);
 
-  const handleToggle = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const toggle = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+
+  const applyPreset = (key: typeof PRESETS[number]["key"]) => {
+    const ids = TWEAKS.filter((t) => t.preset?.includes(key)).map((t) => t.id);
+    setSelected(new Set(ids));
   };
 
-  const handleCreateRestorePoint = async () => {
-    setNotification({ type: "info", message: "Iniciando criação do ponto de restauração..." });
-    try {
-      const msg: string = await invoke("create_restore_point");
-      setNotification({ type: "success", message: msg });
-    } catch (err: any) {
-      setNotification({ type: "error", message: err.toString() });
-    }
-  };
-
-  const handleApplyTweaks = async () => {
+  const applySelected = async () => {
     if (!isAdmin) {
-      setNotification({ type: "error", message: "Você precisa de privilégios de Administrador para aplicar tweaks." });
+      setNotification({ type: "error", msg: "Administrator privileges required to apply tweaks." });
       return;
     }
-
     setIsApplying(true);
-    let successCount = 0;
-    
-    for (const id of selectedIds) {
-      try {
-        await invoke("apply_tweak", { id });
-        successCount++;
-      } catch (err: any) {
-        console.error(`Falha no tweak ${id}:`, err);
-      }
+    let ok = 0;
+    for (const id of selected) {
+      try { await invoke("apply_tweak", { id }); ok++; }
+      catch (e) { console.error(`Tweak ${id} failed:`, e); }
     }
-
     setIsApplying(false);
-    setNotification({ 
-      type: "success", 
-      message: `${successCount} ajustes aplicados com sucesso!` 
-    });
-    setSelectedIds([]);
+    setNotification({ type: "success", msg: `${ok} tweak(s) applied successfully.` });
+    setSelected(new Set());
   };
 
-  const categories = ["Privacidade", "Performance", "Interface", "Sistema"];
-  const filteredTweaks = allTweaks.filter(t => t.category === activeCategory);
+  const createRestorePoint = async () => {
+    setNotification({ type: "info", msg: "Creating system restore point..." });
+    try {
+      const msg: string = await invoke("create_restore_point");
+      setNotification({ type: "success", msg });
+    } catch (e: any) {
+      setNotification({ type: "error", msg: e.toString() });
+    }
+  };
 
   return (
-    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '48px', paddingBottom: '120px' }}>
-      <header style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', fontSize: '10px' }}>
-            <Zap size={14} />
-            <span>Optimization Engine v2.0</span>
-          </div>
-          <h1 className="hero-title" style={{ marginBottom: 0 }}>Ajustes de Sistema</h1>
-          <p className="hero-description" style={{ marginBottom: 0 }}>
-            Modificações de baixo nível para máxima performance. Execute como Admin para total eficácia.
-          </p>
-        </div>
-
-        <button 
-          onClick={handleCreateRestorePoint}
-          className="glass"
-          style={{ padding: '12px 24px', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.85rem', fontWeight: '600' }}
-        >
-          <RotateCcw size={16} /> Segurança: Ponto de Restauração
-        </button>
-      </header>
-
+    <div className="checklist-page fade-in">
+      {/* Admin warning */}
       {isAdmin === false && (
-        <div className="glass" style={{ padding: '20px', borderRadius: 'var(--radius-xl)', borderColor: 'rgba(255, 50, 50, 0.2)', backgroundColor: 'rgba(255, 50, 50, 0.05)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ background: 'rgba(255, 50, 50, 0.1)', padding: '12px', borderRadius: 'var(--radius-md)', color: 'oklch(60% 0.15 20)' }}>
-            <ShieldAlert size={24} />
-          </div>
-          <div>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: '700' }}>Privilégios Insuficientes</h4>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Alguns tweaks requerem permissão de Administrador para serem aplicados.</p>
-          </div>
+        <div className="admin-banner">
+          <ShieldAlert size={14} />
+          <span>Run as <strong>Administrator</strong> to apply registry tweaks.</span>
         </div>
       )}
 
-      {/* Category Tabs */}
-      <nav className="glass" style={{ padding: '6px', borderRadius: 'var(--radius-md)', display: 'flex', gap: '8px', width: 'fit-content' }}>
-        {categories.map((cat) => (
+      {/* Preset strip */}
+      <div className="preset-strip">
+        {PRESETS.map((p) => (
           <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            style={{
-              padding: '10px 24px',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.85rem',
-              fontWeight: '700',
-              background: activeCategory === cat ? 'var(--accent-primary)' : 'transparent',
-              color: activeCategory === cat ? 'white' : 'var(--text-muted)',
-              transition: 'all 0.2s'
-            }}
+            key={p.key}
+            className="preset-btn"
+            onClick={() => applyPreset(p.key)}
+            title={p.desc}
           >
-            {cat}
+            {p.label}
           </button>
         ))}
-      </nav>
-
-      {/* Content Area */}
-      <div className="grid-auto">
-        {isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="card-elite" style={{ height: '160px', opacity: 0.3 }} />
-          ))
-        ) : (
-          filteredTweaks.map((tweak) => (
-            <TweakCard 
-              key={tweak.id}
-              tweak={tweak}
-              isSelected={selectedIds.includes(tweak.id)}
-              onToggle={() => handleToggle(tweak.id)}
-            />
-          ))
-        )}
       </div>
 
-      {/* Global Processing Bar */}
-      {selectedIds.length > 0 && (
-        <div className="glass fade-in" style={{ 
-          position: 'fixed', 
-          bottom: '48px', 
-          left: '50%', 
-          transform: 'translateX(-50%)', 
-          padding: '24px 40px', 
-          borderRadius: 'var(--radius-2xl)', 
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '40px',
-          boxShadow: '0 30px 100px rgba(100, 150, 255, 0.2)',
-          borderColor: 'var(--accent-primary)'
-        }}>
-          <div>
-            <h4 style={{ fontWeight: '700', fontSize: '1.1rem' }}>{selectedIds.length} Alterações Planejadas</h4>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Revise antes de executar modificações no registro.</p>
-          </div>
-
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <button 
-              onClick={() => setSelectedIds([])}
-              style={{ padding: '12px 24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-soft)', fontSize: '0.85rem', fontWeight: '600' }}
-            >
-              Descartar
+      {/* Action bar */}
+      <div className="action-bar">
+        <div className="action-bar-section">
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => setSelected(new Set(TWEAKS.map((t) => t.id)))}
+          >
+            <CheckCheck size={13} /> Select All
+          </button>
+          {selected.size > 0 && (
+            <button className="btn btn-ghost btn-sm" onClick={() => setSelected(new Set())}>
+              <X size={13} /> Clear
             </button>
-            <button 
-              onClick={handleApplyTweaks}
-              disabled={isApplying}
-              className="button-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 40px' }}
-            >
-              {isApplying ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} />}
-              Executar Modificações
-            </button>
-          </div>
+          )}
         </div>
-      )}
 
-      {/* Notifications */}
+        <div className="action-bar-spacer" />
+
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={createRestorePoint}
+          title="Create a restore point before applying tweaks"
+        >
+          <RotateCcw size={13} /> Restore Point
+        </button>
+
+        <button
+          className="btn btn-primary"
+          onClick={applySelected}
+          disabled={selected.size === 0 || isApplying}
+        >
+          {isApplying ? (
+            <><Loader2 size={14} className="animate-spin" /> Applying...</>
+          ) : (
+            <>
+              <Play size={14} />
+              Apply Tweaks
+              {selected.size > 0 && <span className="badge-count">{selected.size}</span>}
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Two-column checklist grid */}
+      <div className="checklist-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+        {COLUMNS.map(({ key, label, icon: Icon }) => {
+          const tweaks = TWEAKS.filter((t) => t.column === key);
+          const colSelected = tweaks.filter((t) => selected.has(t.id)).length;
+
+          return (
+            <div key={key} className="category-col">
+              <div className="category-header">
+                <div className="category-title">
+                  <Icon size={13} />
+                  {label}
+                </div>
+                {colSelected > 0 && <span className="badge-count">{colSelected}</span>}
+              </div>
+
+              {tweaks.map((tweak) => (
+                <TweakRow
+                  key={tweak.id}
+                  tweak={tweak}
+                  isSelected={selected.has(tweak.id)}
+                  onToggle={() => toggle(tweak.id)}
+                />
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Notification */}
       {notification && (
-        <div className="glass fade-in" style={{ 
-          position: 'fixed', top: '32px', right: '32px', zIndex: 2000, padding: '16px 24px', borderRadius: 'var(--radius-xl)', display: 'flex', alignItems: 'center', gap: '16px',
-          borderColor: notification.type === 'success' ? 'var(--accent-primary)' : 'rgba(255,50,50,0.3)',
-          color: notification.type === 'success' ? 'var(--accent-primary)' : 'oklch(60% 0.15 20)'
-        }}>
-          {notification.type === "success" ? <CheckCircle2 size={20} /> : 
-           notification.type === "info" ? <Info size={20} /> : <AlertTriangle size={20} />}
-          <span style={{ fontWeight: '700', fontSize: '0.85rem' }}>{notification.message}</span>
+        <div className={`toast toast-${notification.type} fade-in`}>
+          {notification.type === "success" ? "✓" : notification.type === "error" ? "✕" : "ℹ"}
+          <span>{notification.msg}</span>
         </div>
       )}
     </div>

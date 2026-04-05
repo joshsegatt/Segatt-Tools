@@ -2,14 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { 
-  Zap, 
-  Cpu, 
-  Database, 
-  Terminal,
-  ChevronRight,
-  ShieldCheck
-} from "lucide-react";
+import { Zap, Cpu, Database, Terminal, ChevronRight } from "lucide-react";
 import { ChatInterface } from "@/features/ai/components/ChatInterface";
 
 interface SystemContext {
@@ -31,130 +24,99 @@ interface SmartDiagnostic {
 }
 
 export default function AIPage() {
-  const [data, setData] = useState<SmartDiagnostic | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isApplying, setIsApplying] = useState<string | null>(null);
-
-  const fetchDiagnostic = async () => {
-    try {
-      const res: SmartDiagnostic = await invoke("get_smart_diagnostic");
-      setData(res);
-    } catch (err) {
-      console.error("Diagnostic fetch failed:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [data, setData]           = useState<SmartDiagnostic | null>(null);
+  const [isApplying, setApplying] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDiagnostic();
-    const interval = setInterval(fetchDiagnostic, 3000);
-    return () => clearInterval(interval);
+    const fetch = async () => {
+      try { setData(await invoke("get_smart_diagnostic")); } catch {}
+    };
+    fetch();
+    const i = setInterval(fetch, 3000);
+    return () => clearInterval(i);
   }, []);
 
-  const handleApplyTweak = async (id: string) => {
-    setIsApplying(id);
-    try {
-      await invoke("apply_tweak", { id });
-      alert("Ajuste aplicado com sucesso!");
-    } catch (err: any) {
-      alert(`Erro: ${err}`);
-    } finally {
-      setIsApplying(null);
-    }
+  const applyTweak = async (id: string) => {
+    setApplying(id);
+    try { await invoke("apply_tweak", { id }); } catch {}
+    finally { setApplying(null); }
   };
 
-  const context = data?.context;
-  const ramPercentage = context ? (context.used_memory / context.total_memory) * 100 : 0;
+  const ctx    = data?.context;
+  const ramPct = ctx ? Math.round((ctx.used_memory / ctx.total_memory) * 100) : 0;
+  const cpuPct = ctx ? Math.round(ctx.cpu_usage) : 0;
 
   return (
-    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '48px', paddingBottom: '120px' }}>
-      <header style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)', fontWeight: '700', letterSpacing: '0.2em', textTransform: 'uppercase', fontSize: '10px' }}>
-            <Zap size={14} />
-            <span>Diagnóstico Adaptativo</span>
-          </div>
-          <h1 className="hero-title" style={{ marginBottom: 0 }}>Segatt AI Command</h1>
-          <p className="hero-description" style={{ marginBottom: 0 }}>
-            Sua central de inteligência local. O Segatt analisa seu hardware e sugere otimizações em tempo real.
-          </p>
-        </div>
-      </header>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px', alignItems: 'start' }}>
-        
-        {/* Left Stats Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-             <div className="card-elite" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <Cpu size={20} style={{ color: 'var(--accent-primary)' }} />
-                <div>
-                   <span style={{ fontSize: '1.8rem', fontWeight: '800', fontFamily: 'var(--font-display)' }}>{context?.cpu_usage.toFixed(1)}%</span>
-                   <p className="text-label" style={{ fontSize: '9px', marginTop: '4px' }}>CARGA CPU</p>
-                </div>
-             </div>
-             <div className="card-elite" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <Database size={20} style={{ color: 'var(--accent-primary)' }} />
-                <div>
-                   <span style={{ fontSize: '1.8rem', fontWeight: '800', fontFamily: 'var(--font-display)' }}>{ramPercentage.toFixed(1)}%</span>
-                   <p className="text-label" style={{ fontSize: '9px', marginTop: '4px' }}>RAM EM USO</p>
-                </div>
-             </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-             <h3 className="text-label" style={{ paddingLeft: '8px' }}>Ações Recomendadas</h3>
-             
-             {data?.suggestions.map((s, i) => (
-                <div key={i} className="card-elite" style={{ borderColor: 'rgba(100, 150, 255, 0.2)', backgroundColor: 'rgba(100, 150, 255, 0.05)' }}>
-                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <span style={{ 
-                        fontSize: '9px', 
-                        fontWeight: '800', 
-                        padding: '4px 8px', 
-                        borderRadius: '4px',
-                        background: s.impact === 'High' ? 'rgba(255, 50, 50, 0.1)' : 'rgba(100, 150, 255, 0.1)',
-                        color: s.impact === 'High' ? 'oklch(60% 0.15 20)' : 'var(--accent-primary)'
-                      }}>
-                         IMPACTO {s.impact.toUpperCase()}
-                      </span>
-                      <ShieldCheck size={14} style={{ opacity: 0.3 }} />
-                   </div>
-                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '16px' }}>{s.reason}</p>
-                   <button 
-                     onClick={() => handleApplyTweak(s.tweak_id)}
-                     className="button-primary"
-                     style={{ width: '100%', fontSize: '0.8rem', padding: '10px' }}
-                   >
-                     {isApplying === s.tweak_id ? "OTIMIZANDO..." : "OTIMIZAR AGORA"}
-                   </button>
-                </div>
-             ))}
-          </div>
-
-          <div className="card-elite">
-            <h4 className="text-label" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-               <Terminal size={12} /> Carga em Tempo Real
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {context?.top_processes.slice(0, 3).map((p, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-secondary)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '60px', height: '4px', background: 'var(--border-subtle)', borderRadius: '2px' }}>
-                       <div style={{ width: `${p.cpu_usage}%`, height: '100%', background: 'var(--accent-primary)', borderRadius: '2px' }} />
-                    </div>
-                    <span style={{ fontSize: '10px', fontFamily: 'monospace' }}>{p.cpu_usage.toFixed(0)}%</span>
-                  </div>
-                </div>
-              ))}
+    <div className="fade-in" style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 52px)", overflow: "hidden" }}>
+      {/* Stats strip */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 1, borderBottom: "1px solid var(--border)", background: "var(--bg-surface)" }}>
+        {[
+          { label: "CPU", value: `${cpuPct}%`, pct: cpuPct, icon: <Zap size={12} /> },
+          { label: "RAM", value: `${ramPct}%`, pct: ramPct, icon: <Database size={12} /> },
+        ].map(({ label, value, pct, icon }) => (
+          <div key={label} style={{ padding: "10px 16px", display: "flex", alignItems: "center", gap: 10, borderRight: "1px solid var(--border)" }}>
+            <div style={{ color: "var(--accent)" }}>{icon}</div>
+            <div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase" }}>{label}</div>
+              <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1 }}>{value}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ height: 3, background: "var(--border)", borderRadius: 2 }}>
+                <div style={{ height: "100%", width: `${pct}%`, background: pct > 80 ? "var(--danger)" : "var(--accent)", borderRadius: 2, transition: "width 0.5s" }} />
+              </div>
             </div>
           </div>
-        </div>
+        ))}
 
-        {/* Chat Section */}
-        <div style={{ minWidth: '400px' }}>
+        {/* Top processes */}
+        <div style={{ padding: "10px 16px", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>
+            <Terminal size={10} /> Live Processes
+          </div>
+          {ctx?.top_processes.slice(0, 3).map((p, i) => (
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+              <span style={{ fontSize: 11, color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 80 }}>{p.name}</span>
+              <span style={{ fontSize: 11, fontFamily: "monospace", color: "var(--text-muted)", flexShrink: 0 }}>{p.cpu_usage.toFixed(0)}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main area */}
+      <div style={{ display: "grid", gridTemplateColumns: data?.suggestions?.length ? "280px 1fr" : "1fr", flex: 1, overflow: "hidden" }}>
+        {/* AI Suggestions panel */}
+        {data?.suggestions && data.suggestions.length > 0 && (
+          <div style={{ borderRight: "1px solid var(--border)", overflowY: "auto", display: "flex", flexDirection: "column" }}>
+            <div style={{ padding: "10px 14px", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", background: "var(--bg-surface)" }}>
+              AI Recommendations
+            </div>
+            {data.suggestions.map((s, i) => (
+              <div key={i} className="item-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 8, padding: "12px 14px", cursor: "default" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 3,
+                    background: s.impact === "High" ? "rgba(248,81,73,0.1)" : "var(--accent-dim)",
+                    color: s.impact === "High" ? "var(--danger)" : "var(--accent)"
+                  }}>
+                    {s.impact.toUpperCase()} IMPACT
+                  </span>
+                </div>
+                <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>{s.reason}</p>
+                <button
+                  className="btn btn-primary btn-sm"
+                  style={{ width: "100%" }}
+                  onClick={() => applyTweak(s.tweak_id)}
+                  disabled={isApplying === s.tweak_id}
+                >
+                  {isApplying === s.tweak_id ? "Applying..." : <><ChevronRight size={12} />Optimize Now</>}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Chat */}
+        <div style={{ overflow: "hidden" }}>
           <ChatInterface />
         </div>
       </div>

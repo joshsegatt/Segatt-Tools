@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/features/navigation/components/Sidebar";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
+import { TopBar } from "@/features/navigation/components/TopBar";
 
 export const metadata: Metadata = {
-  title: "Segatt Tools",
-  description: "Elite Windows System Utility & AI Optimization",
+  title: "Segatt Tools — Elite Windows System Utility",
+  description: "Install apps, apply tweaks, and optimize your Windows PC with AI-powered diagnostics. Zero telemetry, privacy-first.",
 };
 
 export default function RootLayout({
@@ -24,20 +13,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="en">
       <body>
-        <div className="app-wrapper">
-          <Sidebar />
-          <main className="main-content">
-            <div className="max-container">
-              {children}
-            </div>
+        <div className="app-shell">
+          <TopBar />
+          <main className="content-area">
+            {children}
           </main>
         </div>
       </body>
     </html>
   );
 }
-
-
-
