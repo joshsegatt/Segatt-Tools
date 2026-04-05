@@ -1,0 +1,153 @@
+
+:root {
+  /* OKLCH Color Palette (Elite System) */
+  --bg-primary: oklch(14% 0.02 245);
+  --bg-surface: oklch(20% 0.03 245 / 0.8);
+  --bg-surface-solid: oklch(20% 0.03 245);
+  
+  --text-primary: oklch(98% 0.01 245);
+  --text-secondary: oklch(75% 0.02 245);
+  --text-muted: oklch(50% 0.02 245);
+  
+  --accent-primary: oklch(65% 0.22 260); /* Electric Blue */
+  --accent-secondary: oklch(70% 0.15 190); /* Cyan/Teal */
+  
+  --border-subtle: oklch(100% 0 0 / 0.08);
+  --border-soft: oklch(100% 0 0 / 0.15);
+  
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --space-unit: 4px;
+  --space-1: calc(var(--space-unit) * 1);
+  --space-2: calc(var(--space-unit) * 2);
+  --space-3: calc(var(--space-unit) * 3);
+  --space-4: calc(var(--space-unit) * 4);
+  --space-6: calc(var(--space-unit) * 6);
+  --space-8: calc(var(--space-unit) * 8);
+  --space-12: calc(var(--space-unit) * 12);
+  
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  
+  /* Fluid Typography */
+  --font-size-xs: clamp(0.7rem, 0.14vw + 0.67rem, 0.78rem);
+  --font-size-sm: clamp(0.8rem, 0.22vw + 0.75rem, 0.92rem);
+  --font-size-base: clamp(1rem, 0.35vw + 0.91rem, 1.19rem);
+  --font-size-lg: clamp(1.25rem, 0.53vw + 1.12rem, 1.54rem);
+  --font-size-xl: clamp(1.56rem, 0.77vw + 1.37rem, 1.99rem);
+  --font-size-2xl: clamp(1.95rem, 1.1vw + 1.68rem, 2.56rem);
+  --font-size-3xl: clamp(2.44rem, 1.56vw + 2.05rem, 3.3rem);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  overflow: hidden; /* App feel: scroll only in main content */
+}
+
+/* Glassmorphism Utility */
+.glass {
+  background: var(--bg-surface);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border-soft);
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-soft);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+
+/* Layout Helpers */
+.app-body {
+  display: flex !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  background-color: var(--bg-primary) !important;
+  overflow: hidden !important;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-12);
+  background: radial-gradient(circle at top right, oklch(25% 0.1 260 / 0.1), transparent 40%),
+              radial-gradient(circle at bottom left, oklch(20% 0.05 190 / 0.1), transparent 40%);
+}
+
+.max-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Typography Utilities */
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  background: linear-gradient(to bottom right, oklch(100% 0 0), oklch(70% 0 0));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-4);
+}
+
+
+.hero-description {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  max-width: 50ch;
+  line-height: 1.5;
+  margin-bottom: var(--space-8);
+}
+
+.button-primary {
+  background: var(--accent-primary);
+  color: white;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: var(--font-size-sm);
+  box-shadow: 0 4px 12px oklch(65% 0.22 260 / 0.2);
+}
+
+.button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px oklch(65% 0.22 260 / 0.3);
+  filter: brightness(1.1);
+}
