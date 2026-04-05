@@ -19,8 +19,7 @@
         "transparent": true,
         "shadow": true,
         "decorations": true,
-        "center": true,
-        "webView2Args": "--enable-features=WebGPU"
+        "center": true
       }
     ],
     "security": {
@@ -39,7 +38,6 @@
     ],
     "publisher": "Segatt Soft",
     "windows": {
-      "manifest": "./app.manifest"
     }
   },
   "plugins": {
