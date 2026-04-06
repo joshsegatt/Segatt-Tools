@@ -19,7 +19,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 export function Sidebar() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const VERSION = "1.7.6";
+  const VERSION = "1.7.7";
 
   const navItems = [
     { label: t("tabs.dashboard"), href: "/", icon: BarChart3 },

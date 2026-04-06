@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap');
 
 /* ============================================================
-   SEGATT TOOLS — ELITE SYSTEM v1.7.5
+   SEGATT TOOLS — ELITE SYSTEM v1.7.6
    Senior Architecture Standard - Emerald & Obsidian
    ============================================================ */
 
@@ -35,9 +35,9 @@
   --r-md: 10px;
   --r-sm: 6px;
   
-  /* Typography */
+  /* Typography - Alta Qualidade (Google Premium standard) */
   --font-display: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* Base Reset */

@@ -177,7 +177,7 @@ export default function TweaksPage() {
         description={t("tweaks.description") || "Optimize Windows settings."}
         compact={true}
       >
-        <div className="action-bar-elite">
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           <button className="btn btn-ghost btn-sm" onClick={() => setSelected(new Set(TWEAKS.map(t => t.id)))}>
             <CheckCheck size={14} />
           </button>
@@ -189,7 +189,8 @@ export default function TweaksPage() {
           </button>
 
           <button
-            className="btn btn-primary"
+            className="btn btn-sm btn-primary"
+            style={{ height: 32 }}
             onClick={applySelected}
             disabled={selected.size === 0 || isApplying}
           >

@@ -105,19 +105,20 @@ export default function CleanerPage() {
         title="Cleaner" 
         description={t("cleaner.subtitle") || "Deep system maintenance and space recovery."}
       >
-        <div style={{ display: "flex", gap: 8 }}>
-          <button className="btn btn-ghost btn-sm" onClick={openSystemRestore}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button className="btn btn-ghost btn-sm" style={{ height: 32 }} onClick={openSystemRestore}>
             <LifeBuoy size={14} /> {t("cleaner.restore_btn")}
           </button>
           <button 
             className={`btn btn-sm ${safetyConfirmed ? 'btn-secondary' : 'btn-primary'}`}
+            style={{ height: 32 }}
             onClick={createRestorePoint}
             disabled={restoring}
           >
             <History size={14} className={restoring ? "animate-spin" : ""} />
             {restoring ? "..." : t("tweaks.create_point")}
           </button>
-          <button className="btn btn-primary btn-sm" onClick={runAll} disabled={!!running || isProcessingAll}>
+          <button className="btn btn-primary btn-sm" style={{ height: 32 }} onClick={runAll} disabled={!!running || isProcessingAll}>
             <Play size={14} /> {t("cleaner.clean_btn")}
           </button>
         </div>

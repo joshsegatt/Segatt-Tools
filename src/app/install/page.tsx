@@ -247,23 +247,26 @@ export default function SoftwareHub() {
         description={t("install.subtitle")}
         compact={true}
       >
-        <div className="action-bar-elite">
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           {/* Mode Switcher */}
-          <div className="tab-pill-elite">
+          <div style={{ display: "flex", gap: 4, background: "var(--glass-bg)", padding: 4, borderRadius: "var(--r-md)", border: "1px solid var(--glass-border)" }}>
             <button 
-              className={mode === "install" ? "active" : ""} 
+              className={`btn btn-sm ${mode === "install" ? "btn-primary" : "btn-ghost"}`}
+              style={mode !== "install" ? { border: "none" } : {}}
               onClick={() => handleModeChange("install")}
             >
               {t("install.mode_install")}
             </button>
             <button 
-              className={mode === "uninstall" ? "active" : ""} 
+              className={`btn btn-sm ${mode === "uninstall" ? "btn-primary" : "btn-ghost"}`}
+              style={mode !== "uninstall" ? { border: "none" } : {}}
               onClick={() => handleModeChange("uninstall")}
             >
               {t("install.mode_uninstall")}
             </button>
             <button 
-              className={mode === "upgrade" ? "active" : ""} 
+              className={`btn btn-sm ${mode === "upgrade" ? "btn-primary" : "btn-ghost"}`}
+              style={mode !== "upgrade" ? { border: "none" } : {}}
               onClick={() => handleModeChange("upgrade")}
             >
               {t("install.mode_upgrade")}
@@ -273,10 +276,10 @@ export default function SoftwareHub() {
           <div className="topbar-divider" />
 
           {/* Search */}
-          <div className="search-wrap-elite">
-            <Search size={14} className="search-icon" />
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--bg-main)", border: "1px solid var(--glass-border)", padding: "0 12px", borderRadius: "var(--r-md)", height: 32 }}>
+            <Search size={14} style={{ color: "var(--text-muted)" }} />
             <input
-              className="search-input-elite"
+              style={{ background: "transparent", border: "none", color: "var(--text-primary)", outline: "none", fontSize: 13, width: 200 }}
               type="text"
               placeholder={t("install.search_placeholder")}
               value={search}
@@ -285,7 +288,8 @@ export default function SoftwareHub() {
           </div>
 
           <button
-            className={`elite-btn-${mode === 'uninstall' ? 'danger' : 'accent'}`}
+            className={`btn btn-sm ${mode === 'uninstall' ? 'btn-secondary' : 'btn-primary'}`}
+            style={{ height: 32 }}
             onClick={executeSelected}
             disabled={selected.size === 0 || working}
           >
