@@ -19,7 +19,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 export function Sidebar() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const VERSION = "1.7.0";
+  const VERSION = "1.7.5";
 
   const navItems = [
     { label: t("tabs.dashboard"), href: "/", icon: BarChart3 },
@@ -39,7 +39,7 @@ export function Sidebar() {
         </div>
         <div className="sidebar-brand-text">
           <span className="brand-name">SEGATT</span>
-          <span className="brand-tools">TOOLS</span>
+          <span className="brand-tools">ELITE</span>
         </div>
       </div>
 
@@ -166,25 +166,32 @@ export function Sidebar() {
         .nav-item {
           display: flex;
           align-items: center;
+          flex-direction: row !important;
           gap: 12px;
-          padding: 10px 12px;
+          padding: 10px 14px;
           border-radius: var(--r-md);
           color: var(--text-secondary);
-          transition: all 0.2s ease;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
-          overflow: hidden;
           text-decoration: none;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.04);
+          margin-bottom: 2px;
         }
 
         .nav-item:hover {
-          background: var(--bg-hover);
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.1);
           color: var(--text-primary);
+          transform: translateX(4px);
         }
 
         .nav-item.active {
           background: var(--accent-dim);
+          border-color: var(--border-accent);
           color: var(--accent);
-          font-weight: 600;
+          font-weight: 700;
+          box-shadow: var(--accent-glow);
         }
 
         .nav-item-icon {
@@ -193,22 +200,26 @@ export function Sidebar() {
           justify-content: center;
           width: 20px;
           height: 20px;
+          flex-shrink: 0;
           transition: transform 0.2s ease;
         }
 
         .nav-item.active .nav-item-icon {
           transform: scale(1.1);
+          filter: drop-shadow(0 0 5px var(--accent));
         }
 
         .nav-item-label {
-          font-size: 14px;
+          font-size: 13px;
+          letter-spacing: 0.3px;
+          white-space: nowrap;
         }
 
         .nav-item-glow {
           position: absolute;
           left: 0;
-          width: 2px;
-          height: 60%;
+          width: 3px;
+          height: 50%;
           background: var(--accent);
           border-radius: 0 4px 4px 0;
           box-shadow: var(--accent-glow);

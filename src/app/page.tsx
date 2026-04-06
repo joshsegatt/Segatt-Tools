@@ -38,87 +38,6 @@ export default function Dashboard() {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   
-  // Updater state
-  const [updateStatus, setUpdateStatus] = useState<"idle" | "checking" | "up-to-date" | "available" | "downloading" | "installing">("idle");
-  const [latestVersion, setLatestVersion] = useState<string>("");
-  const [downloadProgress, setDownloadProgress] = useState<number>(0);
-  const [updateObj, setUpdateObj] = useState<any>(null);
-
-  const CURRENT_VERSION = "1.7.0";
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const ctx: any = await invoke("get_system_context");
-        setStats({
-          cpu_usage: ctx.cpu_usage,
-          used_memory: ctx.used_memory,
-          total_memory: ctx.total_memory,
-        });
-        const admin: boolean = await invoke("check_admin");
-        setIsAdmin(admin);
-      } catch {
-        // Tauri not available in dev browser
-      }
-    };
-
-    fetchStats();
-    const interval = setInterval(fetchStats, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const checkUpdates = async () => {
-    setUpdateStatus("checking");
-    try {
-      const update = await check();
-      if (update) {
-        setLatestVersion(update.version);
-        setUpdateObj(update);
-        setUpdateStatus("available");
-      } else {
-        setUpdateStatus("up-to-date");
-      }
-    } catch (error) {
-      console.error("Update check failed:", error);
-      setUpdateStatus("idle");
-    }
-  };
-
-  const installUpdate = async () => {
-    if (!updateObj) return;
-    setUpdateStatus("downloading");
-    
-    try {
-      let downloaded = 0;
-      let contentLength = 0;
-
-      await updateObj.downloadAndInstall((event: any) => {
-        switch (event.event) {
-          case 'Started':
-            contentLength = event.data.contentLength || 0;
-            setUpdateStatus("downloading");
-            break;
-          case 'Progress':
-            downloaded += event.data.chunkLength;
-            if (contentLength > 0) {
-              setDownloadProgress(Math.round((downloaded / contentLength) * 100));
-            }
-            break;
-          case 'Finished':
-            setUpdateStatus("installing");
-            break;
-        }
-      });
-
-      // Restart the app
-      await relaunch();
-    } catch (error) {
-      console.error("Update installation failed:", error);
-      alert("Update failed. Please try manual download.");
-      setUpdateStatus("available");
-    }
-  };
-
   const openLink = async (url: string) => {
     try {
       await openUrl(url);
@@ -315,46 +234,16 @@ export default function Dashboard() {
             </div>
           </Link>
 
-          {/* Updater Card */}
+          {/* Updater Card (Status Only) */}
           <div className="quick-card glass-panel" style={{ background: "rgba(255,255,255,0.01)" }}>
             <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.05)", color: "var(--text-muted)" }}>
-              <RefreshCw size={22} className={updateStatus === "checking" ? "animate-spin" : ""} />
+              <RefreshCw size={22} />
             </div>
             <div className="quick-card-content">
-              <div className="quick-card-title">{t("dashboard.check_updates")}</div>
-              <div className="quick-card-desc" style={{ color: updateStatus === "available" ? "var(--warning)" : "inherit" }}>
-                {updateStatus === "idle" && `v${CURRENT_VERSION}`}
-                {updateStatus === "checking" && t("dashboard.checking")}
-                {updateStatus === "up-to-date" && t("dashboard.up_to_date")}
-                {updateStatus === "available" && `${t("dashboard.update_available")} (v${latestVersion})`}
-                {updateStatus === "downloading" && (
-                  <div style={{ width: '100%', marginTop: 8 }}>
-                    <div style={{ fontSize: 10, marginBottom: 4 }}>{t("common.loading")} {downloadProgress}%</div>
-                    <div className="stat-bar-track">
-                      <div className="stat-bar-fill" style={{ width: `${downloadProgress}%` }} />
-                    </div>
-                  </div>
-                )}
-                {updateStatus === "installing" && "Installing..."}
+              <div className="quick-card-title">Segatt Tools v1.7.0</div>
+              <div className="quick-card-desc">
+                O sistema de atualizações automáticas está ativo. O app verificará novas versões em segundo plano.
               </div>
-            </div>
-            <div className="quick-card-actions">
-              {updateStatus === "available" ? (
-                <button 
-                  onClick={installUpdate}
-                  className="btn btn-primary btn-sm"
-                  style={{ background: "var(--warning)", color: "black", border: "none" }}
-                >
-                  Update Now
-                </button>
-              ) : (updateStatus === "idle" || updateStatus === "up-to-date") ? (
-                <button 
-                  onClick={checkUpdates}
-                  className="btn btn-secondary btn-sm"
-                >
-                  Check
-                </button>
-              ) : null}
             </div>
           </div>
         </div>
