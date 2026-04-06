@@ -38,6 +38,25 @@ export default function Dashboard() {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   
+  const fetchStats = async () => {
+    try {
+      const data = await invoke<SystemStats>("get_system_stats");
+      setStats(data);
+    } catch (err) {
+      console.error("Failed to fetch system stats:", err);
+    }
+  };
+
+  useEffect(() => {
+    // Initial fetch
+    fetchStats();
+    invoke<boolean>("check_admin").then(setIsAdmin).catch(() => setIsAdmin(false));
+
+    // Poll every 3 seconds
+    const interval = setInterval(fetchStats, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   const openLink = async (url: string) => {
     try {
       await openUrl(url);
@@ -57,7 +76,7 @@ export default function Dashboard() {
     <div className="fade-in elite-dashboard">
       <PageHeader 
         title={t("tabs.dashboard")} 
-        description={t("dashboard.system_summary") || "System overview"}
+        description={t("dashboard.system_summary") || "System health and quick access"}
         compact={true}
       />
 
@@ -240,7 +259,7 @@ export default function Dashboard() {
               <RefreshCw size={22} />
             </div>
             <div className="quick-card-content">
-              <div className="quick-card-title">Segatt Tools v1.7.0</div>
+              <div className="quick-card-title">Segatt Tools v1.7.5</div>
               <div className="quick-card-desc">
                 O sistema de atualizações automáticas está ativo. O app verificará novas versões em segundo plano.
               </div>
