@@ -60,6 +60,7 @@ export default function FixesPage() {
       <PageHeader 
         title={t("fixes.title")} 
         description={t("fixes.subtitle")}
+        compact={true}
       />
 
       <div className="fixes-grid">
@@ -184,21 +185,21 @@ export default function FixesPage() {
         .elite-fixes {
           display: flex;
           flex-direction: column;
-          gap: 24px;
-          padding-bottom: 40px;
+          gap: 12px;
+          padding-bottom: 20px;
         }
 
         .fixes-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-          gap: 20px;
+          grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+          gap: 12px;
         }
 
         .fixes-section {
-          padding: 20px;
+          padding: 12px;
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 12px;
         }
 
         .section-header {
@@ -317,7 +318,7 @@ export default function FixesPage() {
         .log-content {
           font-family: var(--font-mono);
           font-size: 11px;
-          height: 120px;
+          height: 90px;
           overflow-y: auto;
           display: flex;
           flex-direction: column-reverse;

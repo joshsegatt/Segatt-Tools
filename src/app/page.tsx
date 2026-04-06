@@ -138,7 +138,8 @@ export default function Dashboard() {
     <div className="fade-in elite-dashboard">
       <PageHeader 
         title={t("tabs.dashboard")} 
-        description={t("dashboard.system_summary") || "System overview and status"}
+        description={t("dashboard.system_summary") || "System overview"}
+        compact={true}
       />
 
       {/* Admin warning */}
@@ -242,9 +243,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Main Grid */}
-      <section className="dashboard-grid-container">
-        <h2 className="grid-label">{t("dashboard.quick_actions")}</h2>
+      <section className="dashboard-grid-container" style={{ marginTop: 12 }}>
+        <h2 className="grid-label" style={{ marginBottom: 10 }}>{t("dashboard.quick_actions")}</h2>
         
         <div className="quick-grid">
           <Link href="/install" style={{ textDecoration: "none" }}>
@@ -361,7 +361,7 @@ export default function Dashboard() {
       </section>
 
       {/* Secondary Actions / Support */}
-      <section className="dashboard-secondary-grid" style={{ marginTop: 32 }}>
+      <section className="dashboard-secondary-grid" style={{ marginTop: 12 }}>
         <div className="quick-grid">
           {/* Support Card */}
           <div className="quick-card support-card">
@@ -412,7 +412,7 @@ export default function Dashboard() {
 
       <style jsx>{`
         .elite-dashboard {
-          padding: 24px;
+          padding: 16px 24px;
           max-width: 1200px;
           width: 100%;
         }
@@ -436,12 +436,12 @@ export default function Dashboard() {
         }
 
         .grid-label {
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.15em;
           color: var(--text-muted);
-          margin-bottom: 20px;
+          margin-bottom: 12px;
         }
 
         .quick-card-content {

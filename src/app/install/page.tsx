@@ -84,7 +84,7 @@ const AppRow = ({ app, isSelected, status, mode, onToggle, onAction }: AppRowPro
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 8px 12px;
+          padding: 5px 12px;
           border-radius: var(--r-sm);
           cursor: pointer;
           transition: all 0.2s ease;
@@ -243,8 +243,9 @@ export default function SoftwareHub() {
   return (
     <div className="software-hub fade-in">
       <PageHeader 
-        title={mode === "install" ? t("nav.install") : mode === "uninstall" ? t("install.mode_uninstall") : t("install.mode_upgrade")} 
+        title={mode === "install" ? t("tabs.apps") : mode === "uninstall" ? t("install.mode_uninstall") : t("install.mode_upgrade")} 
         description={t("install.subtitle")}
+        compact={true}
       >
         <div className="action-bar-elite">
           {/* Mode Switcher */}
@@ -366,15 +367,15 @@ export default function SoftwareHub() {
         .software-hub {
           display: flex;
           flex-direction: column;
-          gap: 20px;
-          padding-bottom: 80px;
+          gap: 12px;
+          padding-bottom: 20px;
         }
 
         .hub-controls-bar {
           display: flex;
           align-items: center;
           gap: 24px;
-          padding: 12px 20px;
+          padding: 8px 16px;
           border-radius: var(--r-md);
         }
 
@@ -425,7 +426,7 @@ export default function SoftwareHub() {
         }
 
         .hub-category-header {
-          padding: 16px;
+          padding: 10px 16px;
           display: flex;
           align-items: center;
           gap: 12px;
@@ -439,10 +440,10 @@ export default function SoftwareHub() {
         }
 
         .hub-apps-list {
-          padding: 12px;
+          padding: 8px;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 2px;
         }
 
         .toggle-switch.small {

@@ -174,7 +174,8 @@ export default function TweaksPage() {
     <div className="checklist-page fade-in">
       <PageHeader 
         title={t("tabs.tweaks")} 
-        description={t("tweaks.description") || "Optimize Windows settings for performance and privacy."}
+        description={t("tweaks.description") || "Optimize Windows settings."}
+        compact={true}
       >
         <div className="action-bar-elite">
           <button className="btn btn-ghost btn-sm" onClick={() => setSelected(new Set(TWEAKS.map(t => t.id)))}>

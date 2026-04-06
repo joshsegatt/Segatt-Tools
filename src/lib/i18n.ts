@@ -3,13 +3,19 @@ export type Language = "pt" | "en";
 export const translations = {
   pt: {
     // Navigation
-    nav: {
+    tabs: {
       dashboard: "Início",
       cleaner: "Limpeza",
-      install: "Instalação",
+      apps: "Instalação",
       tweaks: "Ajustes",
       fixes: "Reparos",
       management: "Controle",
+      settings: "Configurações",
+    },
+    // Sidebar
+    sidebar: {
+      main_menu: "Menu Inicial",
+      system: "Sistema",
     },
     // Dashboard
     // Dashboard
@@ -142,13 +148,19 @@ export const translations = {
   },
   en: {
     // Navigation
-    nav: {
+    tabs: {
       dashboard: "Home",
       cleaner: "Cleaner",
-      install: "Installer",
+      apps: "Installer",
       tweaks: "Tweaks",
       fixes: "Fixes",
       management: "Management",
+      settings: "Settings",
+    },
+    // Sidebar
+    sidebar: {
+      main_menu: "Main Menu",
+      system: "System",
     },
     // Dashboard
     dashboard: {

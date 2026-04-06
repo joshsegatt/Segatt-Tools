@@ -19,7 +19,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 export function Sidebar() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const VERSION = "1.6.0";
+  const VERSION = "1.7.0";
 
   const navItems = [
     { label: t("tabs.dashboard"), href: "/", icon: BarChart3 },
@@ -45,7 +45,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="sidebar-nav">
-        <div className="nav-group-label">{t("sidebar.main_menu") || "MAIN MENU"}</div>
+        <div className="nav-group-label">{t("sidebar.main_menu")}</div>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -68,13 +68,13 @@ export function Sidebar() {
 
       {/* Bottom Actions */}
       <div className="sidebar-footer">
-        <div className="nav-group-label">{t("sidebar.system") || "SYSTEM"}</div>
+        <div className="nav-group-label">{t("sidebar.system")}</div>
         <Link 
           href="/settings"
           className={`nav-item ${pathname === "/settings" ? "active" : ""}`}
         >
           <div className="nav-item-icon">
-            <IconWrapper icon={Settings} size={18} />
+            <Settings size={18} />
           </div>
           <span className="nav-item-label">{t("tabs.settings")}</span>
         </Link>

@@ -37,6 +37,7 @@ export default function ConfigPage() {
       <PageHeader 
         title={t("management.title")} 
         description={t("management.subtitle")}
+        compact={true}
       />
 
       {/* Windows Update Presets */}
@@ -124,8 +125,8 @@ export default function ConfigPage() {
         .elite-config {
           display: flex;
           flex-direction: column;
-          gap: 32px;
-          padding-bottom: 60px;
+          gap: 16px;
+          padding-bottom: 20px;
         }
 
         .config-section {
@@ -154,15 +155,15 @@ export default function ConfigPage() {
 
         .preset-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 20px;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 12px;
         }
 
         .preset-card {
-          padding: 24px;
+          padding: 16px;
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 12px;
           cursor: pointer;
           transition: all 0.2s ease;
           position: relative;
@@ -220,17 +221,17 @@ export default function ConfigPage() {
         }
 
         .feature-item {
-          padding: 16px;
+          padding: 10px 16px;
           display: flex;
           align-items: center;
           gap: 16px;
         }
 
         .feature-icon {
-          width: 40px;
-          height: 40px;
+          width: 32px;
+          height: 32px;
           background: rgba(255, 255, 255, 0.03);
-          border-radius: var(--r-md);
+          border-radius: var(--r-sm);
           display: flex;
           align-items: center;
           justify-content: center;
