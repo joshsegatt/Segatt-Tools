@@ -223,7 +223,7 @@ export default function TweaksPage() {
         ))}
       </div>
 
-      <div className="checklist-grid">
+      <div className="elite-columns">
         {COLUMNS.map(({ key, label, icon: Icon }) => {
           const tweaks = TWEAKS.filter((t) => t.column === key);
           const colSelected = tweaks.filter((t) => selected.has(t.id)).length;

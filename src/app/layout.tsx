@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/features/navigation/components/Sidebar";
 import { LanguageProvider } from "@/hooks/useLanguage";
-import { AutoUpdater } from "@/features/system/components/AutoUpdater";
 
 export const metadata: Metadata = {
   title: "Segatt Tools — Elite Windows System Utility",
@@ -29,8 +28,6 @@ export default function RootLayout({
             <main className="content-area-elite">
               {children}
             </main>
-
-            <AutoUpdater />
           </div>
         </LanguageProvider>
       </body>

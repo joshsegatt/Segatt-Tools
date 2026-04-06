@@ -21,6 +21,7 @@ import {
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useLanguage } from "@/hooks/useLanguage";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 export default function FixesPage() {
   const { t } = useLanguage();
@@ -30,17 +31,36 @@ export default function FixesPage() {
   const runFix = async (id: string, command: string) => {
     if (running) return;
     setRunning(id);
-    setLogs(prev => [`[${new Date().toLocaleTimeString()}] Iniciando: ${id}...`, ...prev]);
+    
+    // Clear logs and show start
+    const startTime = new Date().toLocaleTimeString();
+    setLogs([`[${startTime}] Iniciando: ${id}...`]);
     
     try {
-      // In a real scenario, this would call a Tauri command that executes PS
-      // For now, simulating the process
-      await new Promise(r => setTimeout(r, 2000));
-      setLogs(prev => [`[${new Date().toLocaleTimeString()}] Sucesso: Operação concluída.`, ...prev]);
+      // Listen for log events
+      const unlisten = await listen<string>("system-fix-log", (event) => {
+        setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${event.payload}`, ...prev]);
+      });
+
+      // Execute the real fix
+      await invoke("run_system_fix", { id });
+
+      // The Rust side will emit the logs and "CONCLUÍDO" event
     } catch (err) {
-      setLogs(prev => [`[${new Date().toLocaleTimeString()}] Erro: ${err}`, ...prev]);
-    } finally {
+      setLogs(prev => [`[${new Date().toLocaleTimeString()}] ERRO CRÍTICO: ${err}`, ...prev]);
       setRunning(null);
+    } finally {
+      // We don't null running here because the streaming handles the completion visual
+      setTimeout(() => setRunning(null), 1000);
+    }
+  };
+
+  const openLegacyPanel = async (cmd: string) => {
+    try {
+      await invoke("open_legacy_panel", { panel: cmd });
+      setLogs(prev => [`[${new Date().toLocaleTimeString()}] Abrindo Painel: ${cmd}`, ...prev]);
+    } catch (err) {
+      setLogs(prev => [`[${new Date().toLocaleTimeString()}] Erro ao abrir: ${err}`, ...prev]);
     }
   };
 
@@ -78,7 +98,7 @@ export default function FixesPage() {
               <Terminal size={20} />
               <div className="tool-info">
                 <span className="tool-name">{t("fixes.sfc_scan")}</span>
-                <span className="tool-desc">Verifica e repara arquivos corrompidos.</span>
+                <span className="tool-desc">{t("fixes.sfc_desc")}</span>
               </div>
               {running === 'sfc' && <div className="loader-ring" />}
             </button>
@@ -90,7 +110,7 @@ export default function FixesPage() {
               <Database size={20} />
               <div className="tool-info">
                 <span className="tool-name">{t("fixes.dism_repair")}</span>
-                <span className="tool-desc">Repara a imagem do Windows online.</span>
+                <span className="tool-desc">{t("fixes.dism_desc")}</span>
               </div>
               {running === 'dism' && <div className="loader-ring" />}
             </button>
@@ -156,7 +176,11 @@ export default function FixesPage() {
           </div>
           <div className="legacy-panels-grid">
             {LEGACY_PANELS.map((panel) => (
-              <button key={panel.cmd} className="legacy-item glass-panel">
+              <button 
+                key={panel.cmd} 
+                className="legacy-item glass-panel"
+                onClick={() => openLegacyPanel(panel.cmd)}
+              >
                 <panel.icon size={16} />
                 <span>{panel.name}</span>
                 <ExternalLink size={12} className="external-icon" />
@@ -170,7 +194,7 @@ export default function FixesPage() {
       <div className="fixes-log-container glass-panel">
         <div className="log-header">
           <Terminal size={14} />
-          <span>Console de Operações</span>
+          <span>{t("fixes.terminal")}</span>
         </div>
         <div className="log-content">
           {logs.length === 0 ? (

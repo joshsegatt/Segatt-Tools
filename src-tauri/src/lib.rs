@@ -4,7 +4,7 @@ use crate::features::packages::{search_packages, install_package_stream};
 use crate::features::tweaks::{get_tweaks, apply_tweak, create_restore_point, check_admin};
 use crate::features::ai::{get_system_context, chat_with_segatt_ai, get_smart_diagnostic};
 use crate::features::cleaner::run_cleanup;
-use crate::features::system::{get_system_stats, SystemState};
+use crate::features::system::{get_system_stats, open_legacy_panel, run_system_fix, SystemState};
 use sysinfo::System;
 use std::sync::Mutex;
 
@@ -21,8 +21,7 @@ pub fn run() {
 
   builder = builder
     .plugin(tauri_plugin_shell::init())
-    .plugin(tauri_plugin_opener::init())
-    .plugin(tauri_plugin_updater::Builder::new().build());
+    .plugin(tauri_plugin_opener::init());
 
   if cfg!(debug_assertions) {
     builder = builder.plugin(
@@ -48,7 +47,9 @@ pub fn run() {
       chat_with_segatt_ai,
       get_smart_diagnostic,
       run_cleanup,
-      get_system_stats
+      get_system_stats,
+      open_legacy_panel,
+      run_system_fix
     ])
 
 

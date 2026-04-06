@@ -37,58 +37,134 @@ export const TweakCard = ({ tweak, isSelected, onToggle, isApplied }: TweakCardP
   return (
     <div 
       onClick={onToggle}
-      className={`card-elite ${isSelected ? "selected" : ""}`}
-      style={{
-        cursor: 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-soft)',
-        backgroundColor: isSelected ? 'oklch(65% 0.22 260 / 0.05)' : 'var(--bg-surface)'
-      }}
+      className={`tweak-card-elite glass-panel ${isSelected ? "selected" : ""} ${isApplied ? "applied" : ""}`}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-        <div style={{ 
-          padding: '10px', 
-          borderRadius: 'var(--radius-md)', 
-          background: isSelected ? 'var(--accent-primary)' : 'var(--border-subtle)',
-          color: isSelected ? 'white' : 'var(--text-muted)',
-          transition: 'all 0.3s'
-        }}>
+      <div className="tweak-card-header">
+        <div className="tweak-icon-box">
           <CategoryIcon category={tweak.category} />
         </div>
         
-        <div style={{ color: isSelected ? 'var(--accent-primary)' : 'var(--text-muted)' }}>
-          {isSelected ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+        <div className="tweak-selector">
+          {isSelected ? (
+            <CheckCircle2 size={18} className="text-accent" strokeWidth={3} />
+          ) : (
+            <Circle size={18} className="text-muted" strokeWidth={2} />
+          )}
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <h3 style={{ fontSize: '0.9rem', fontWeight: '700', color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
-          {tweak.name}
-        </h3>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-          {tweak.description}
-        </p>
+      <div className="tweak-card-body">
+        <h3 className="tweak-title">{tweak.name}</h3>
+        <p className="tweak-desc">{tweak.description}</p>
       </div>
 
       {isApplied && (
-        <div style={{ 
-          marginTop: 'auto',
-          paddingTop: '8px',
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '6px', 
-          fontSize: '9px', 
-          textTransform: 'uppercase', 
-          fontWeight: '800', 
-          color: 'var(--accent-primary)', 
-          letterSpacing: '0.1em'
-        }}>
-          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-primary)' }} />
-          Aplicado
+        <div className="tweak-applied-badge">
+          <div className="applied-dot" />
+          <span>Active</span>
         </div>
       )}
+
+      <style jsx>{`
+        .tweak-card-elite {
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 1px solid var(--glass-border);
+          position: relative;
+          background: rgba(255, 255, 255, 0.01);
+          min-height: 140px;
+        }
+
+        .tweak-card-elite:hover {
+          background: var(--bg-hover);
+          border-color: var(--border-accent);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .tweak-card-elite.selected {
+          background: var(--accent-dim);
+          border-color: var(--accent);
+          box-shadow: var(--accent-glow);
+        }
+
+        .tweak-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .tweak-icon-box {
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: var(--r-md);
+          color: var(--text-muted);
+          transition: all 0.3s;
+        }
+
+        .selected .tweak-icon-box {
+          background: var(--accent);
+          color: white;
+          box-shadow: 0 0 15px var(--accent);
+        }
+
+        .tweak-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .tweak-title {
+          font-family: var(--font-display);
+          font-size: 14px;
+          font-weight: 800;
+          color: var(--text-primary);
+          line-height: 1.2;
+        }
+
+        .tweak-desc {
+          font-size: 12px;
+          color: var(--text-muted);
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .tweak-applied-badge {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 9px;
+          font-weight: 900;
+          text-transform: uppercase;
+          color: var(--accent);
+          letter-spacing: 0.1em;
+          padding-top: 8px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .applied-dot {
+          width: 6px;
+          height: 6px;
+          background: var(--accent);
+          border-radius: 50%;
+          box-shadow: 0 0 8px var(--accent);
+        }
+
+        .text-accent { color: var(--accent); }
+        .text-muted { color: var(--text-muted); }
+      `}</style>
     </div>
   );
 };

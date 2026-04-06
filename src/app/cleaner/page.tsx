@@ -130,7 +130,7 @@ export default function CleanerPage() {
         </div>
       )}
 
-      <div className="checklist-grid">
+      <div className="elite-columns">
         {["Basic", "System", "Optimization", "Gaming"].map(category => (
           <div key={category} className="category-column">
             <div className="category-title-elite">

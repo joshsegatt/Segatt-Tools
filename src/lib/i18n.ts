@@ -16,6 +16,7 @@ export const translations = {
     sidebar: {
       main_menu: "Menu Inicial",
       system: "Sistema",
+      update_winget: "Atualize via Winget",
     },
     // Dashboard
     // Dashboard
@@ -121,11 +122,17 @@ export const translations = {
       title: "Reparos de Arquitetura",
       subtitle: "Soluções profissionais para problemas comuns do Windows.",
       sfc_scan: "Verificação de Corrupção",
+      sfc_desc: "Verifica e repara arquivos corrompidos (SFC).",
       dism_repair: "Reparo de Imagem (DISM)",
+      dism_desc: "Repara a imagem do Windows online.",
       net_reset: "Resetar Pilha de Rede",
+      net_desc: "Limpa configurações de IP e Winsock.",
       update_reset: "Resetar Componentes de Update",
+      update_desc: "Reinicia serviços e limpa cache de update.",
       clear_cache: "Limpar Cache de Ícones/Fonts",
+      cache_desc: "Resolve problemas visuais e de fontes.",
       legacy_panels: "Painéis Legados",
+      terminal: "Console de Operações",
     },
     // Management
     management: {
@@ -161,6 +168,7 @@ export const translations = {
     sidebar: {
       main_menu: "Main Menu",
       system: "System",
+      update_winget: "Update via Winget",
     },
     // Dashboard
     dashboard: {
@@ -265,11 +273,17 @@ export const translations = {
       title: "Architectural Fixes",
       subtitle: "Professional solutions for common Windows issues.",
       sfc_scan: "System File Checker",
+      sfc_desc: "Check and repair corrupted files (SFC).",
       dism_repair: "Image Repair (DISM)",
+      dism_desc: "Repair Windows online image component store.",
       net_reset: "Reset Network Stack",
+      net_desc: "Clears IP settings and Winsock catalog.",
       update_reset: "Reset Update Components",
+      update_desc: "Restarts services and clears update cache.",
       clear_cache: "Clear Icon/Font Cache",
+      cache_desc: "Resolves visual and font related issues.",
       legacy_panels: "Legacy Panels",
+      terminal: "Operation Console",
     },
     // Management
     management: {

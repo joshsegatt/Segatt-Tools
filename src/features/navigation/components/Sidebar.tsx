@@ -19,7 +19,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 export function Sidebar() {
   const pathname = usePathname();
   const { t } = useLanguage();
-  const VERSION = "1.7.5";
+  const VERSION = "1.7.6";
 
   const navItems = [
     { label: t("tabs.dashboard"), href: "/", icon: BarChart3 },
@@ -57,10 +57,10 @@ export function Sidebar() {
               className={`nav-item ${isActive ? "active" : ""}`}
             >
               <div className="nav-item-icon">
-                <Icon size={18} />
+                <Icon size={20} strokeWidth={2.5} />
               </div>
               <span className="nav-item-label">{item.label}</span>
-              {isActive && <div className="nav-item-glow" />}
+              {isActive && <div className="nav-item-active-bar" />}
             </Link>
           );
         })}
@@ -74,7 +74,7 @@ export function Sidebar() {
           className={`nav-item ${pathname === "/settings" ? "active" : ""}`}
         >
           <div className="nav-item-icon">
-            <Settings size={18} />
+            <Settings size={20} strokeWidth={2.5} />
           </div>
           <span className="nav-item-label">{t("tabs.settings")}</span>
         </Link>
@@ -82,13 +82,15 @@ export function Sidebar() {
         <div className="sidebar-version-card glass-panel">
           <div className="version-info">
             <ShieldCheck size={14} className="text-accent" />
-            <span>v{VERSION}</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800 }}>v{VERSION}</span>
+            <span className="elite-badge">ELITE</span>
           </div>
           <div className="version-status">
             <div className="status-dot animate-pulse" />
-            <span>{t("dashboard.privacy_status") || "Protected"}</span>
+            <span>{t("sidebar.update_winget") || "Update via Winget"}</span>
           </div>
         </div>
+
       </div>
 
       <style jsx>{`
@@ -97,11 +99,9 @@ export function Sidebar() {
           height: 100vh;
           display: flex;
           flex-direction: column;
-          padding: 24px 16px;
-          border-radius: 0;
-          border-left: none;
-          border-top: none;
-          border-bottom: none;
+          padding: 32px 20px;
+          background: var(--bg-sidebar);
+          border-right: 1px solid var(--glass-border);
           z-index: 1000;
           user-select: none;
         }
@@ -109,13 +109,13 @@ export function Sidebar() {
         .sidebar-brand {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 0 8px 32px;
+          gap: 14px;
+          padding: 0 8px 40px;
         }
 
         .sidebar-logo {
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           background: var(--accent-dim);
           border: 1px solid var(--border-accent);
           border-radius: var(--r-md);
@@ -128,145 +128,143 @@ export function Sidebar() {
         .sidebar-brand-text {
           display: flex;
           flex-direction: column;
-          line-height: 1.1;
+          line-height: 1;
         }
 
         .brand-name {
           font-family: var(--font-display);
-          font-weight: 900;
-          font-size: 18px;
+          font-weight: 950;
+          font-size: 20px;
           letter-spacing: -0.5px;
           color: var(--text-primary);
         }
 
         .brand-tools {
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 2px;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 2.5px;
           color: var(--accent);
-          opacity: 0.8;
+          opacity: 0.9;
         }
 
         .sidebar-nav {
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 8px;
         }
 
         .nav-group-label {
-          font-size: 10px;
-          font-weight: 700;
+          font-size: 11px;
+          font-weight: 800;
           color: var(--text-muted);
           text-transform: uppercase;
-          letter-spacing: 1px;
-          padding: 16px 8px 8px;
+          letter-spacing: 1.5px;
+          padding: 12px 8px 8px;
         }
 
         .nav-item {
           display: flex;
           align-items: center;
-          flex-direction: row !important;
-          gap: 12px;
-          padding: 12px 16px;
+          gap: 14px;
+          padding: 14px 18px;
           border-radius: var(--r-md);
           color: var(--text-secondary);
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           text-decoration: none;
-          background: rgba(255, 255, 255, 0.015);
-          border: 1px solid rgba(255, 255, 255, 0.03);
-          margin-bottom: 4px;
+          background: rgba(255, 255, 255, 0.01);
+          border: 1px solid transparent;
         }
 
         .nav-item:hover {
-          background: rgba(255, 255, 255, 0.04);
-          border-color: rgba(255, 255, 255, 0.08);
+          background: var(--bg-hover);
+          border-color: var(--glass-border);
           color: var(--text-primary);
-          transform: translateX(4px);
+          padding-left: 22px;
         }
 
         .nav-item.active {
           background: var(--accent-dim);
           border-color: var(--border-accent);
           color: var(--text-primary);
-          font-weight: 700;
-          box-shadow: var(--accent-glow);
+          box-shadow: var(--accent-glow), inset 0 0 10px rgba(255,255,255,0.02);
         }
 
         .nav-item-icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 22px;
-          height: 22px;
-          flex-shrink: 0;
+          color: inherit;
           transition: transform 0.2s ease;
         }
 
         .nav-item.active .nav-item-icon {
-          transform: scale(1.1);
           color: var(--accent);
           filter: drop-shadow(0 0 8px var(--accent));
+          transform: scale(1.1);
         }
 
         .nav-item-label {
-          font-size: 14px;
-          font-weight: 500;
-          letter-spacing: 0.2px;
-          white-space: nowrap;
+          font-family: var(--font-display);
+          font-size: 15px;
+          font-weight: 700;
+          letter-spacing: 0.3px;
         }
 
-        .nav-item-glow {
+        .nav-item-active-bar {
           position: absolute;
           left: 0;
-          width: 3px;
+          top: 25%;
           height: 50%;
+          width: 4px;
           background: var(--accent);
           border-radius: 0 4px 4px 0;
-          box-shadow: var(--accent-glow);
+          box-shadow: 0 0 15px var(--accent);
         }
 
         .sidebar-footer {
           margin-top: auto;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 12px;
+          padding-top: 20px;
+          border-top: 1px solid var(--glass-border);
         }
 
         .sidebar-version-card {
-          padding: 12px;
+          padding: 16px;
+          border-radius: var(--r-lg);
+          background: rgba(0, 0, 0, 0.2);
           display: flex;
           flex-direction: column;
-          gap: 4px;
-          background: rgba(255, 255, 255, 0.01);
-          margin-top: 16px;
+          gap: 6px;
+          border-color: oklch(100% 0 0 / 0.05);
         }
 
         .version-info {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          font-weight: 600;
+          gap: 8px;
+          font-size: 13px;
           color: var(--text-primary);
         }
 
         .version-status {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 10px;
+          gap: 8px;
+          font-size: 11px;
           color: var(--success);
-          opacity: 0.8;
+          font-weight: 600;
         }
 
         .status-dot {
-          width: 6px;
-          height: 6px;
+          width: 7px;
+          height: 7px;
           background: var(--success);
           border-radius: 50%;
-          box-shadow: 0 0 8px var(--success);
+          box-shadow: 0 0 10px var(--success);
         }
 
         .animate-pulse {
@@ -275,10 +273,20 @@ export function Sidebar() {
 
         @keyframes pulse {
           0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
+          50% { opacity: .4; }
         }
 
         .text-accent { color: var(--accent); }
+
+        .elite-badge {
+          font-size: 8px;
+          background: var(--accent);
+          color: black;
+          padding: 1px 4px;
+          border-radius: 3px;
+          font-weight: 900;
+          margin-left: 4px;
+        }
       `}</style>
     </aside>
   );

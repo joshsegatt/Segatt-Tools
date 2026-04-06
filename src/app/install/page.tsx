@@ -334,7 +334,7 @@ export default function SoftwareHub() {
         </div>
       </div>
 
-      <div className="software-grid">
+      <div className="elite-columns">
         {filteredCategories.map((cat) => {
           const Icon = ICON_MAP[cat.icon] ?? Package;
           return (

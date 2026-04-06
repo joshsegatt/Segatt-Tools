@@ -18,52 +18,32 @@ interface PackageCardProps {
 
 export const PackageCard = ({ pkg, onInstall, onSelect, isSelected }: PackageCardProps) => {
   return (
-    <div 
-      className={`card-elite ${isSelected ? "selected" : ""}`}
-      style={{
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-soft)',
-        backgroundColor: isSelected ? 'oklch(65% 0.22 260 / 0.05)' : 'var(--bg-surface)'
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-        <div style={{ padding: '12px', borderRadius: 'var(--radius-md)', background: 'var(--border-subtle)', color: 'var(--accent-primary)' }}>
-          <PackageIcon size={24} />
+    <div className={`package-card-elite glass-panel ${isSelected ? "selected" : ""}`}>
+      <div className="package-card-header">
+        <div className="package-icon-box">
+          <PackageIcon size={24} strokeWidth={1.5} />
         </div>
         <button 
           onClick={() => onSelect(pkg)}
-          style={{ 
-            padding: '8px', 
-            borderRadius: 'var(--radius-sm)', 
-            background: isSelected ? 'var(--accent-primary)' : 'var(--border-subtle)',
-            color: isSelected ? 'white' : 'var(--text-muted)'
-          }}
+          className={`select-toggle ${isSelected ? "active" : ""}`}
         >
           {isSelected ? <Minus size={16} /> : <Plus size={16} />}
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {pkg.name}
-        </h3>
-        <p className="text-label" style={{ fontSize: '10px', textTransform: 'none', letterSpacing: '0' }}>
-          ID: {pkg.id}
-        </p>
+      <div className="package-card-body">
+        <h3 className="package-title">{pkg.name}</h3>
+        <p className="package-id">ID: {pkg.id}</p>
       </div>
 
-      <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span className="text-label" style={{ fontSize: '9px' }}>Versão</span>
-          <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-secondary)' }}>{pkg.version}</span>
+      <div className="package-card-footer">
+        <div className="package-meta">
+          <span className="meta-label">Versão</span>
+          <span className="meta-value">{pkg.version}</span>
         </div>
         <button 
           onClick={(e) => { e.stopPropagation(); onInstall(pkg.id); }}
-          className="button-primary"
-          style={{ padding: '8px', borderRadius: 'var(--radius-sm)' }}
+          className="install-button-elite"
           title="Instalar Agora"
         >
           <Download size={18} />
@@ -71,10 +51,153 @@ export const PackageCard = ({ pkg, onInstall, onSelect, isSelected }: PackageCar
       </div>
 
       {isSelected && (
-        <div style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--accent-primary)', color: 'white', borderRadius: '50%', padding: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+        <div className="selection-badge">
           <CheckCircle2 size={12} />
         </div>
       )}
+
+      <style jsx>{`
+        .package-card-elite {
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          border: 1px solid var(--glass-border);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          background: rgba(255, 255, 255, 0.01);
+          min-height: 180px;
+        }
+
+        .package-card-elite:hover {
+          background: var(--bg-hover);
+          border-color: var(--border-accent);
+          transform: translateY(-4px);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .package-card-elite.selected {
+          background: var(--accent-dim);
+          border-color: var(--accent);
+          box-shadow: var(--accent-glow);
+        }
+
+        .package-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .package-icon-box {
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: var(--r-md);
+          color: var(--accent);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .select-toggle {
+          padding: 8px;
+          border-radius: var(--r-sm);
+          background: rgba(255, 255, 255, 0.05);
+          color: var(--text-muted);
+          border: 1px solid transparent;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .select-toggle.active {
+          background: var(--accent);
+          color: white;
+          box-shadow: 0 0 10px var(--accent);
+        }
+
+        .package-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .package-title {
+          font-family: var(--font-display);
+          font-size: 16px;
+          font-weight: 800;
+          color: var(--text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .package-id {
+          font-size: 11px;
+          color: var(--text-muted);
+          font-family: 'JetBrains Mono', monospace;
+          opacity: 0.7;
+        }
+
+        .package-card-footer {
+          margin-top: auto;
+          padding-top: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .package-meta {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .meta-label {
+          font-size: 10px;
+          font-weight: 800;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          letter-spacing: 0.1em;
+        }
+
+        .meta-value {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-secondary);
+        }
+
+        .install-button-elite {
+          padding: 10px;
+          border-radius: var(--r-md);
+          background: var(--accent);
+          color: white;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          transition: all 0.2s;
+        }
+
+        .install-button-elite:hover {
+          transform: scale(1.05);
+          filter: brightness(1.1);
+          box-shadow: var(--accent-glow);
+        }
+
+        .selection-badge {
+          position: absolute;
+          top: -6px;
+          right: -6px;
+          background: var(--accent);
+          color: white;
+          border-radius: 50%;
+          padding: 4px;
+          box-shadow: 0 0 15px var(--accent);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      `}</style>
     </div>
   );
 };

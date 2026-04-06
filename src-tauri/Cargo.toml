@@ -1,8 +1,8 @@
 [package]
 name = "app"
-version = "1.7.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "1.7.6"
+description = "Segatt Tools — Elite Edition"
+authors = ["Segatt Soft"]
 license = ""
 repository = ""
 edition = "2021"
@@ -25,7 +25,6 @@ tauri = { version = "2.10.3", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-opener = "2"
 tauri-plugin-shell = "2"
-tauri-plugin-updater = "2"
 sysinfo = "0.31.0"
 
 [profile.release]

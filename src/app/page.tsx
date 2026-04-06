@@ -74,21 +74,20 @@ export default function Dashboard() {
 
   return (
     <div className="fade-in elite-dashboard">
-      <PageHeader 
-        title={t("tabs.dashboard")} 
-        description={t("dashboard.system_summary") || "System health and quick access"}
-        compact={true}
-      />
+      <div className="dashboard-header-lite">
+        <h1 className="dashboard-title-elite">{t("tabs.dashboard")}</h1>
+        <p className="dashboard-sub-elite">{t("dashboard.system_summary") || "System health at a glance"}</p>
+      </div>
 
       {/* Admin warning */}
       {isAdmin === false && (
         <div className="admin-banner-elite">
-          <ShieldAlert size={16} />
+          <ShieldAlert size={18} />
           <span>{t("dashboard.admin_warn")}</span>
         </div>
       )}
 
-      {/* System Stats Strip */}
+      {/* System Stats Strip - Densified */}
       <div className="stat-strip">
         <div className="stat-card">
           <div className="stat-label">
@@ -119,9 +118,6 @@ export default function Dashboard() {
             {t("dashboard.ram")}
           </div>
           <div className="stat-value">{stats ? `${ramPct}%` : "—"}</div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-            {ramUsed} / {ramTotal} GB
-          </div>
           <div className="stat-bar-track">
             <div
               className="stat-bar-fill"
@@ -137,6 +133,9 @@ export default function Dashboard() {
               }}
             />
           </div>
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 6, fontWeight: 700 }}>
+            {ramUsed} / {ramTotal} GB
+          </div>
         </div>
 
         <div className="stat-card">
@@ -144,10 +143,10 @@ export default function Dashboard() {
             <Shield size={12} className="text-accent" />
             {t("dashboard.privacy")}
           </div>
-          <div className="stat-value text-success">
+          <div className="stat-value text-success" style={{ fontSize: 20 }}>
             {t("dashboard.privacy_status")}
           </div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 4 }}>
             {t("dashboard.zero_telemetry")}
           </div>
         </div>
@@ -166,7 +165,7 @@ export default function Dashboard() {
                   : isAdmin
                   ? "var(--success)"
                   : "var(--danger)",
-              fontSize: 18,
+              fontSize: 20,
             }}
           >
             {isAdmin === null 
@@ -175,217 +174,184 @@ export default function Dashboard() {
                 ? t("dashboard.admin_elevated") 
                 : t("dashboard.admin_standard")}
           </div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 4 }}>
             {isAdmin ? t("dashboard.admin_full") : t("dashboard.admin_limited")}
           </div>
         </div>
       </div>
 
-      <section className="dashboard-grid-container" style={{ marginTop: 12 }}>
-        <h2 className="grid-label" style={{ marginBottom: 10 }}>{t("dashboard.quick_actions")}</h2>
+      <section className="dashboard-main-content">
+        <h2 className="grid-label">{t("dashboard.quick_actions")}</h2>
         
         <div className="quick-grid">
-          <Link href="/install" style={{ textDecoration: "none" }}>
+          <Link href="/install" className="quick-card-link">
             <div className="quick-card">
               <div className="quick-card-icon">
-                <Package size={22} />
+                <Package size={24} />
               </div>
-              <div className="quick-card-content">
+              <div className="quick-card-body">
                 <div className="quick-card-title">{t("dashboard.install_title")}</div>
-                <div className="quick-card-desc">
-                  {t("dashboard.install_desc")}
-                </div>
+                <div className="quick-card-desc">{t("dashboard.install_desc")}</div>
               </div>
-              <div className="quick-card-footer">
-                {t("dashboard.open_installer")} <ArrowRight size={12} />
-              </div>
+              <div className="quick-card-tag">{t("dashboard.open_installer")} <ArrowRight size={12} /></div>
             </div>
           </Link>
 
-          <Link href="/tweaks" style={{ textDecoration: "none" }}>
+          <Link href="/tweaks" className="quick-card-link">
             <div className="quick-card">
               <div className="quick-card-icon">
-                <Wrench size={22} />
+                <Wrench size={24} />
               </div>
-              <div className="quick-card-content">
+              <div className="quick-card-body">
                 <div className="quick-card-title">{t("dashboard.tweaks_title")}</div>
-                <div className="quick-card-desc">
-                  {t("dashboard.tweaks_desc")}
-                </div>
+                <div className="quick-card-desc">{t("dashboard.tweaks_desc")}</div>
               </div>
-              <div className="quick-card-footer">
-                {t("dashboard.open_tweaks")} <ArrowRight size={12} />
-              </div>
+              <div className="quick-card-tag">{t("dashboard.open_tweaks")} <ArrowRight size={12} /></div>
             </div>
           </Link>
 
-          <Link href="/fixes" style={{ textDecoration: "none" }}>
+          <Link href="/fixes" className="quick-card-link">
             <div className="quick-card">
               <div className="quick-card-icon">
-                <ShieldAlert size={22} />
+                <ShieldAlert size={24} />
               </div>
-              <div className="quick-card-content">
+              <div className="quick-card-body">
                 <div className="quick-card-title">{t("fixes.title")}</div>
-                <div className="quick-card-desc">
-                  Repare erros do sistema, SFC & DISM com um clique.
-                </div>
+                <div className="quick-card-desc">Repare erros de SFC, DISM & Update.</div>
               </div>
-              <div className="quick-card-footer">
-                Abrir Reparos <ArrowRight size={12} />
-              </div>
+              <div className="quick-card-tag">Reparar Agora <ArrowRight size={12} /></div>
             </div>
           </Link>
 
-          <Link href="/config" style={{ textDecoration: "none" }}>
+          <Link href="/config" className="quick-card-link">
             <div className="quick-card">
               <div className="quick-card-icon">
-                <Settings size={22} />
+                <Settings size={24} />
               </div>
-              <div className="quick-card-content">
+              <div className="quick-card-body">
                 <div className="quick-card-title">{t("management.title")}</div>
-                <div className="quick-card-desc">
-                  Controle atualizações e recursos do Windows.
-                </div>
+                <div className="quick-card-desc">Controle do Windows & Atualizações.</div>
               </div>
-              <div className="quick-card-footer">
-                Gerenciar Sistema <ArrowRight size={12} />
-              </div>
+              <div className="quick-card-tag">Gerenciar <ArrowRight size={12} /></div>
             </div>
           </Link>
-
-          {/* Updater Card (Status Only) */}
-          <div className="quick-card glass-panel" style={{ background: "rgba(255,255,255,0.01)" }}>
-            <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.05)", color: "var(--text-muted)" }}>
-              <RefreshCw size={22} />
-            </div>
-            <div className="quick-card-content">
-              <div className="quick-card-title">Segatt Tools v1.7.5</div>
-              <div className="quick-card-desc">
-                O sistema de atualizações automáticas está ativo. O app verificará novas versões em segundo plano.
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Secondary Actions / Support */}
-      <section className="dashboard-secondary-grid" style={{ marginTop: 12 }}>
-        <div className="quick-grid">
-          {/* Support Card */}
-          <div className="quick-card support-card">
-            <div className="quick-card-icon support-icon">
-              <Heart size={22} fill="currentColor" />
-            </div>
-            <div className="quick-card-content">
-              <div className="quick-card-title">{t("dashboard.support_title")}</div>
-              <div className="quick-card-desc">
-                {t("dashboard.support_desc")}
-              </div>
-            </div>
-            <button 
-              onClick={() => openLink("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=segatt22@gmail.com&item_name=Segatt+Tools+Support")}
-              className="btn btn-primary"
-              style={{ 
-                background: "var(--danger)", 
-                boxShadow: "0 4px 20px oklch(65% 0.2 25 / 0.4)",
-                border: "none"
-              }}
-            >
-              {t("dashboard.donate_btn")}
-            </button>
-          </div>
-
-          {/* Social Card */}
-          <div className="quick-card glass-panel" style={{ background: "rgba(255,255,255,0.01)" }}>
-            <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.05)", color: "var(--text-muted)" }}>
-              <ExternalLink size={22} />
-            </div>
-            <div className="quick-card-content">
-              <div className="quick-card-title">{t("dashboard.socials_title")}</div>
-              <div className="social-links" style={{ display: "flex", gap: 16, marginTop: 12 }}>
-                <button onClick={() => openLink("https://github.com/joshsegatt")} className="btn-ghost btn-icon">
-                  <Github size={20} />
-                </button>
-                <button onClick={() => openLink("https://www.instagram.com/josh_segatt")} className="btn-ghost btn-icon">
-                  <Instagram size={20} />
-                </button>
-                <button onClick={() => openLink("https://www.linkedin.com/in/josh-segat-522760102/?locale=en")} className="btn-ghost btn-icon">
-                  <Linkedin size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
+      {/* Socials & Support Strip - Very Compact */}
+      <footer className="dashboard-footer-elite">
+        <div className="social-mini-card glass-panel" onClick={() => openLink("https://github.com/joshsegatt")}>
+          <Github size={16} /> <span>GitHub</span>
         </div>
-      </section>
+        <div className="social-mini-card glass-panel" onClick={() => openLink("https://www.instagram.com/josh_segatt")}>
+          <Instagram size={16} /> <span>Instagram</span>
+        </div>
+        <div 
+          className="donate-mini-card" 
+          onClick={() => openLink("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=segatt22@gmail.com&item_name=Segatt+Tools+Support")}
+        >
+          <Heart size={16} fill="white" /> <span>{t("dashboard.donate_btn")}</span>
+        </div>
+      </footer>
 
       <style jsx>{`
         .elite-dashboard {
-          padding: 16px 24px;
+          padding: 32px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          height: 100%;
           max-width: 1200px;
-          width: 100%;
         }
 
-        .dashboard-header {
-          margin-bottom: 32px;
+        .dashboard-header-lite {
+          margin-bottom: 8px;
         }
 
-        .dashboard-title {
-          font-family: var(--font-display);
-          font-size: 32px;
-          font-weight: 900;
+        .dashboard-title-elite {
+          font-size: 36px;
+          font-weight: 950;
           color: var(--text-primary);
-          letter-spacing: -1px;
+          line-height: 1;
         }
 
-        .dashboard-subtitle {
+        .dashboard-sub-elite {
           font-size: 14px;
-          color: var(--text-secondary);
-          margin-top: 4px;
+          color: var(--text-muted);
+          margin-top: 6px;
         }
 
         .grid-label {
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.15em;
           color: var(--text-muted);
           margin-bottom: 12px;
+          padding-left: 2px;
         }
 
-        .quick-card-content {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
+        .quick-card-link {
+          text-decoration: none;
+          color: inherit;
         }
 
-        .quick-card-footer {
-          margin-top: auto;
+        .quick-card-body {
+          flex: 1;
+        }
+
+        .quick-card-tag {
+          margin-top: 12px;
+          font-size: 11px;
+          font-weight: 800;
+          color: var(--accent);
           display: flex;
           align-items: center;
-          gap: 8px;
-          font-size: 12px;
-          font-weight: 700;
-          color: var(--accent);
-          opacity: 0.8;
+          gap: 6px;
+          opacity: 0.7;
           transition: opacity 0.2s;
         }
 
-        .quick-card:hover .quick-card-footer {
+        .quick-card:hover .quick-card-tag {
           opacity: 1;
         }
 
-        .support-card {
-           background: linear-gradient(135deg, oklch(65% 0.2 25 / 0.1), transparent 80%);
-           border-color: oklch(65% 0.2 25 / 0.3);
+        .dashboard-footer-elite {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-top: 20px;
         }
 
-        .support-icon {
-          background: oklch(65% 0.2 25 / 0.2);
-          color: var(--danger);
-          border-color: oklch(65% 0.2 25 / 0.4);
+        .social-mini-card {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 700;
         }
 
-        .text-accent { color: var(--accent); }
+        .donate-mini-card {
+          margin-left: auto;
+          background: var(--danger);
+          color: white;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 20px;
+          border-radius: var(--r-md);
+          font-size: 12px;
+          font-weight: 800;
+          cursor: pointer;
+          box-shadow: 0 4px 15px oklch(65% 0.2 25 / 0.3);
+          transition: transform 0.2s;
+        }
+
+        .donate-mini-card:hover { border-color: transparent; }
+
         .text-success { color: var(--success); }
       `}</style>
     </div>
