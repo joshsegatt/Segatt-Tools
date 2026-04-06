@@ -33,15 +33,45 @@ export default function CleanerPage() {
       category: "Basic",
     },
     {
+      id: "clean_recycle_bin",
+      name: t("cleaner.items.recycle_bin"),
+      description: "Empties the recycle bin from all drives.",
+      category: "Basic",
+    },
+    {
       id: "clean_prefetch",
       name: t("cleaner.items.prefetch"),
       description: "Clears Prefetch folder for consistency.",
       category: "System",
     },
     {
+      id: "clean_windows_old",
+      name: t("cleaner.items.win_old"),
+      description: "Removes residues from previous Windows installations.",
+      category: "System",
+    },
+    {
+      id: "clean_logs_minidumps",
+      name: t("cleaner.items.logs"),
+      description: "Clears system logs and error memory dumps.",
+      category: "System",
+    },
+    {
       id: "flush_dns",
       name: t("cleaner.items.dns"),
       description: "Flushes DNS revolver cache for network latency.",
+      category: "Optimization",
+    },
+    {
+      id: "clean_thumbnails",
+      name: t("cleaner.items.thumbnails"),
+      description: "Resets icon and thumbnail cache for cleaner explorer.",
+      category: "Optimization",
+    },
+    {
+      id: "clean_delivery_optimization",
+      name: t("cleaner.items.delivery_opt"),
+      description: "Clears Windows Update delivery cache (GBs of space).",
       category: "Optimization",
     },
     {
@@ -155,7 +185,9 @@ export default function CleanerPage() {
               <History size={14} className={restoring ? "animate-spin" : ""} />
               {restoring ? "..." : t("tweaks.create_point")}
               {completedTasks.has("restore_point") && (
-                <span className="done-badge"><CheckCheck size={10} /> DONE</span>
+                <span className="status-done-chip" style={{ position: 'absolute', top: -8, right: -8, scale: '0.8' }}>
+                  ✓ {t("install.status_done")}
+                </span>
               )}
             </button>
 

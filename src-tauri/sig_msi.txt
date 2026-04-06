@@ -1,0 +1,8 @@
+
+Your file was signed successfully, You can find the signature here:
+C:\Users\josue\Desktop\Segatt tools\src-tauri\target\release\bundle\msi\Segatt Tools_1.5.5_x64_en-US.msi.sig
+
+Public signature:
+dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSOU41blBueG5JczN4aFFncmY0aktib1l1MlBKb1dBcXc0WnBGOVI0MDRJaDJHREZEdldQZWQ2U2poUFQ0SmR1NVpLU0NndThtZWJXT1UyOHVOQ3RwbjlmRFV4SCtsNkE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1NDczMjI0CWZpbGU6U2VnYXR0IFRvb2xzXzEuNS41X3g2NF9lbi1VUy5tc2kKdWJRRm12bllQT1hxKytCYmg2TDBYVU96RnNkVEJYTG1USmFxU0hvSWFnV2dGOEdRUEdtNmdSVkUwdTR1ZmM1bm5UZzNlYW1KWVBPZGdpaTZuL1dxREE9PQo=
+
+Make sure to include this into the signature field of your update server.

@@ -1,6 +1,6 @@
 {
   "productName": "Segatt Tools",
-  "version": "1.5.3",
+  "version": "1.5.5",
   "identifier": "com.segatt.tools",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "Segatt Tools v1.5.3 — Elite System Utility",
+        "title": "Segatt Tools v1.5.5 — Stable AI & Native Updates",
         "width": 1200,
         "height": 800,
         "resizable": true,
@@ -42,6 +42,7 @@
   },
   "plugins": {
     "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIzQzgxOTlGQ0Y5OTM3N0QKUldSOU41blBueG5JczlhbEJJYzFhT0RDc3ZWaDAxVlBnU0NqQjJWZUZWYTBrbFB1Q1B5am92WjUK",
       "endpoints": [
         "https://raw.githubusercontent.com/joshsegatt/Segatt-Tools/main/update.json"
       ]

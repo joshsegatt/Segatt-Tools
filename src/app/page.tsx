@@ -41,7 +41,7 @@ export default function Dashboard() {
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [updateObj, setUpdateObj] = useState<any>(null);
 
-  const CURRENT_VERSION = "1.5.0";
+  const CURRENT_VERSION = "1.5.5";
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -315,8 +315,15 @@ export default function Dashboard() {
               {updateStatus === "checking" && t("dashboard.checking")}
               {updateStatus === "up-to-date" && t("dashboard.up_to_date")}
               {updateStatus === "available" && `${t("dashboard.update_available")} (v${latestVersion})`}
-              {updateStatus === "downloading" && `Downloading... ${downloadProgress}%`}
-              {updateStatus === "installing" && "Installing update..."}
+              {updateStatus === "downloading" && (
+                <div style={{ width: '100%', marginTop: 4 }}>
+                  <div style={{ fontSize: 10, marginBottom: 2 }}>{t("common.loading")} {downloadProgress}%</div>
+                  <div style={{ width: '100%', height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{ width: `${downloadProgress}%`, height: '100%', background: 'var(--accent)', transition: 'width 0.2s ease' }} />
+                  </div>
+                </div>
+              )}
+              {updateStatus === "installing" && "Installing..."}
             </div>
           </div>
           {updateStatus === "available" && (

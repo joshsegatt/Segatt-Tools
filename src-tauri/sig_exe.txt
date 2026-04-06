@@ -1,0 +1,8 @@
+
+Your file was signed successfully, You can find the signature here:
+C:\Users\josue\Desktop\Segatt tools\src-tauri\target\release\bundle\nsis\Segatt Tools_1.5.5_x64-setup.exe.sig
+
+Public signature:
+dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSOU41blBueG5Jc3ptSnQxMzlaSEZyMWZWdE1McE9zbUJzcVozUjFTNzc3VFdLMzhkWXFaV3EzODVtT0NnbzVqejJ4eUxLaG5ZRkIvd0UyTmFOMEhQK21USU1YNmpoWkFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1NDczMjI0CWZpbGU6U2VnYXR0IFRvb2xzXzEuNS41X3g2NC1zZXR1cC5leGUKakhGRlVCdk5UaVhDN2lMZEtJck8vQzdjMGJ5SGx3VXpDUnhEWDhmaVlKbzNMK3lkaTlNTGRUV0Y3bzR3cVd0anlOQ2QxNUpHMVQySmxEUnF0U0NDQUE9PQo=
+
+Make sure to include this into the signature field of your update server.

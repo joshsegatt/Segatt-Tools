@@ -77,6 +77,49 @@ pub async fn run_cleanup(id: String) -> Result<CleanupResult, String> {
                     .status()
             },
 
+            // ── Elite System Cleaning ────────────────────────────────────────────
+            "clean_recycle_bin" => {
+                let script = "Clear-RecycleBin -Force -ErrorAction SilentlyContinue";
+                silent_cmd("powershell")
+                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
+                    .status()
+            },
+
+            "clean_windows_old" => {
+                let script = "if (Test-Path 'C:\\Windows.old') { Remove-Item -Path 'C:\\Windows.old' -Force -Recurse -ErrorAction SilentlyContinue }";
+                silent_cmd("powershell")
+                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
+                    .status()
+            },
+
+            "clean_delivery_optimization" => {
+                let script = "
+                    Stop-Service -Name DoSvc -Force -ErrorAction SilentlyContinue
+                    Remove-Item -Path 'C:\\Windows\\ServiceProfiles\\NetworkService\\AppData\\Local\\Microsoft\\Windows\\DeliveryOptimization\\Cache\\*' -Force -Recurse -ErrorAction SilentlyContinue
+                    Start-Service -Name DoSvc -ErrorAction SilentlyContinue
+                ";
+                silent_cmd("powershell")
+                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
+                    .status()
+            },
+
+            "clean_thumbnails" => {
+                let script = "Get-ChildItem -Path \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\" -Filter thumbcache_*.db | Remove-Item -Force -ErrorAction SilentlyContinue";
+                silent_cmd("powershell")
+                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
+                    .status()
+            },
+
+            "clean_logs_minidumps" => {
+                let script = "
+                    Get-ChildItem -Path 'C:\\Windows' -Filter *.log -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+                    if (Test-Path 'C:\\Windows\\Minidump') { Get-ChildItem -Path 'C:\\Windows\\Minidump' -Filter *.dmp | Remove-Item -Force -ErrorAction SilentlyContinue }
+                ";
+                silent_cmd("powershell")
+                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
+                    .status()
+            },
+
             _ => return Err(format!("Unknown cleanup task: '{}'", id)),
         }
         .map_err(|e| format!("Failed to execute task: {}", e))

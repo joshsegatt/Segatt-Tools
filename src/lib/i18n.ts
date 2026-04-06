@@ -67,6 +67,11 @@ export const translations = {
         prefetch: "Arquivos Prefetch",
         dns: "Cache de DNS",
         shader: "Cache de Shaders DirectX",
+        recycle_bin: "Lixeira",
+        win_old: "Instalações Antigas (Windows.old)",
+        delivery_opt: "Cache de Otimização de Entrega",
+        thumbnails: "Cache de Miniaturas",
+        logs: "Logs e Minidumps do Sistema",
       },
     },
     // Install
@@ -183,6 +188,11 @@ export const translations = {
         prefetch: "Prefetch Files",
         dns: "DNS Cache",
         shader: "DirectX Shader Cache",
+        recycle_bin: "Recycle Bin",
+        win_old: "Old Windows Installations",
+        delivery_opt: "Delivery Optimization Cache",
+        thumbnails: "Thumbnail Cache",
+        logs: "System Logs & Minidumps",
       },
     },
     // Install
