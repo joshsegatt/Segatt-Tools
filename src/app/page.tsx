@@ -17,12 +17,15 @@ import {
   Heart,
   RefreshCw,
   ExternalLink,
+  ShieldAlert,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { useLanguage } from "@/hooks/useLanguage";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 interface SystemStats {
   cpu_usage: number;
@@ -41,7 +44,7 @@ export default function Dashboard() {
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [updateObj, setUpdateObj] = useState<any>(null);
 
-  const CURRENT_VERSION = "1.5.5";
+  const CURRENT_VERSION = "1.7.0";
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -132,14 +135,17 @@ export default function Dashboard() {
   const ramTotal = stats ? (stats.total_memory / 1024).toFixed(0) : "—";
 
   return (
-    <div className="fade-in">
+    <div className="fade-in elite-dashboard">
+      <PageHeader 
+        title={t("tabs.dashboard")} 
+        description={t("dashboard.system_summary") || "System overview and status"}
+      />
+
       {/* Admin warning */}
       {isAdmin === false && (
-        <div className="admin-banner">
-          <AlertTriangle size={14} />
-          <span>
-            {t("dashboard.admin_warn")}
-          </span>
+        <div className="admin-banner-elite">
+          <ShieldAlert size={16} />
+          <span>{t("dashboard.admin_warn")}</span>
         </div>
       )}
 
@@ -147,7 +153,7 @@ export default function Dashboard() {
       <div className="stat-strip">
         <div className="stat-card">
           <div className="stat-label">
-            <Activity size={12} />
+            <Activity size={12} className="text-accent" />
             {t("dashboard.cpu_usage")}
           </div>
           <div className="stat-value">{stats ? `${cpuPct}%` : "—"}</div>
@@ -162,6 +168,7 @@ export default function Dashboard() {
                     : cpuPct > 60
                     ? "var(--warning)"
                     : "var(--accent)",
+                boxShadow: cpuPct > 80 ? "0 0 10px var(--danger)" : "var(--accent-glow)"
               }}
             />
           </div>
@@ -169,12 +176,12 @@ export default function Dashboard() {
 
         <div className="stat-card">
           <div className="stat-label">
-            <Cpu size={12} />
+            <Cpu size={12} className="text-accent" />
             {t("dashboard.ram")}
           </div>
           <div className="stat-value">{stats ? `${ramPct}%` : "—"}</div>
           <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-            {ramUsed} GB / {ramTotal} GB
+            {ramUsed} / {ramTotal} GB
           </div>
           <div className="stat-bar-track">
             <div
@@ -187,6 +194,7 @@ export default function Dashboard() {
                     : ramPct > 65
                     ? "var(--warning)"
                     : "var(--accent)",
+                boxShadow: ramPct > 85 ? "0 0 10px var(--danger)" : "var(--accent-glow)"
               }}
             />
           </div>
@@ -194,10 +202,10 @@ export default function Dashboard() {
 
         <div className="stat-card">
           <div className="stat-label">
-            <Shield size={12} />
+            <Shield size={12} className="text-accent" />
             {t("dashboard.privacy")}
           </div>
-          <div className="stat-value" style={{ color: "var(--success)", fontSize: 20 }}>
+          <div className="stat-value text-success">
             {t("dashboard.privacy_status")}
           </div>
           <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
@@ -207,7 +215,7 @@ export default function Dashboard() {
 
         <div className="stat-card">
           <div className="stat-label">
-            <CheckCircle2 size={12} />
+            <CheckCircle2 size={12} className="text-accent" />
             {t("dashboard.admin")}
           </div>
           <div
@@ -234,179 +242,244 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div
-        style={{
-          padding: "0 16px 8px",
-          fontSize: 11,
-          fontWeight: 700,
-          textTransform: "uppercase",
-          letterSpacing: "0.06em",
-          color: "var(--text-muted)",
-        }}
-      >
-        {t("dashboard.quick_actions")}
-      </div>
-
-      <div className="quick-grid">
-        <Link href="/install" style={{ textDecoration: "none" }}>
-          <div className="quick-card">
-            <div className="quick-card-icon">
-              <Package size={20} />
-            </div>
-            <div>
-              <div className="quick-card-title">{t("dashboard.install_title")}</div>
-              <div className="quick-card-desc">
-                {t("dashboard.install_desc")}
+      {/* Main Grid */}
+      <section className="dashboard-grid-container">
+        <h2 className="grid-label">{t("dashboard.quick_actions")}</h2>
+        
+        <div className="quick-grid">
+          <Link href="/install" style={{ textDecoration: "none" }}>
+            <div className="quick-card">
+              <div className="quick-card-icon">
+                <Package size={22} />
               </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>
-              {t("dashboard.open_installer")} <ArrowRight size={12} />
-            </div>
-          </div>
-        </Link>
-
-        <Link href="/tweaks" style={{ textDecoration: "none" }}>
-          <div className="quick-card">
-            <div className="quick-card-icon">
-              <Wrench size={20} />
-            </div>
-            <div>
-              <div className="quick-card-title">{t("dashboard.tweaks_title")}</div>
-              <div className="quick-card-desc">
-                {t("dashboard.tweaks_desc")}
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>
-              {t("dashboard.open_tweaks")} <ArrowRight size={12} />
-            </div>
-          </div>
-        </Link>
-
-        <Link href="/ai" style={{ textDecoration: "none" }}>
-          <div className="quick-card">
-            <div className="quick-card-icon">
-              <Cpu size={20} />
-            </div>
-            <div>
-              <div className="quick-card-title">{t("dashboard.ai_title")}</div>
-              <div className="quick-card-desc">
-                {t("dashboard.ai_desc")}
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--accent)", fontWeight: 600 }}>
-              {t("dashboard.open_ai")} <ArrowRight size={12} />
-            </div>
-          </div>
-        </Link>
-      </div>
-
-      {/* Social & Support & Updater */}
-      <div className="quick-grid" style={{ marginTop: 24 }}>
-        {/* Updater Card */}
-        <div className="quick-card" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.1)", color: "var(--text-muted)" }}>
-            <RefreshCw size={20} className={updateStatus === "checking" ? "spin" : ""} />
-          </div>
-          <div>
-            <div className="quick-card-title">{t("dashboard.check_updates")}</div>
-            <div className="quick-card-desc" style={{ color: updateStatus === "available" ? "var(--warning)" : "inherit" }}>
-              {updateStatus === "idle" && `v${CURRENT_VERSION}`}
-              {updateStatus === "checking" && t("dashboard.checking")}
-              {updateStatus === "up-to-date" && t("dashboard.up_to_date")}
-              {updateStatus === "available" && `${t("dashboard.update_available")} (v${latestVersion})`}
-              {updateStatus === "downloading" && (
-                <div style={{ width: '100%', marginTop: 4 }}>
-                  <div style={{ fontSize: 10, marginBottom: 2 }}>{t("common.loading")} {downloadProgress}%</div>
-                  <div style={{ width: '100%', height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{ width: `${downloadProgress}%`, height: '100%', background: 'var(--accent)', transition: 'width 0.2s ease' }} />
-                  </div>
+              <div className="quick-card-content">
+                <div className="quick-card-title">{t("dashboard.install_title")}</div>
+                <div className="quick-card-desc">
+                  {t("dashboard.install_desc")}
                 </div>
-              )}
-              {updateStatus === "installing" && "Installing..."}
+              </div>
+              <div className="quick-card-footer">
+                {t("dashboard.open_installer")} <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/tweaks" style={{ textDecoration: "none" }}>
+            <div className="quick-card">
+              <div className="quick-card-icon">
+                <Wrench size={22} />
+              </div>
+              <div className="quick-card-content">
+                <div className="quick-card-title">{t("dashboard.tweaks_title")}</div>
+                <div className="quick-card-desc">
+                  {t("dashboard.tweaks_desc")}
+                </div>
+              </div>
+              <div className="quick-card-footer">
+                {t("dashboard.open_tweaks")} <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/fixes" style={{ textDecoration: "none" }}>
+            <div className="quick-card">
+              <div className="quick-card-icon">
+                <ShieldAlert size={22} />
+              </div>
+              <div className="quick-card-content">
+                <div className="quick-card-title">{t("fixes.title")}</div>
+                <div className="quick-card-desc">
+                  Repare erros do sistema, SFC & DISM com um clique.
+                </div>
+              </div>
+              <div className="quick-card-footer">
+                Abrir Reparos <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/config" style={{ textDecoration: "none" }}>
+            <div className="quick-card">
+              <div className="quick-card-icon">
+                <Settings size={22} />
+              </div>
+              <div className="quick-card-content">
+                <div className="quick-card-title">{t("management.title")}</div>
+                <div className="quick-card-desc">
+                  Controle atualizações e recursos do Windows.
+                </div>
+              </div>
+              <div className="quick-card-footer">
+                Gerenciar Sistema <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          {/* Updater Card */}
+          <div className="quick-card glass-panel" style={{ background: "rgba(255,255,255,0.01)" }}>
+            <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.05)", color: "var(--text-muted)" }}>
+              <RefreshCw size={22} className={updateStatus === "checking" ? "animate-spin" : ""} />
+            </div>
+            <div className="quick-card-content">
+              <div className="quick-card-title">{t("dashboard.check_updates")}</div>
+              <div className="quick-card-desc" style={{ color: updateStatus === "available" ? "var(--warning)" : "inherit" }}>
+                {updateStatus === "idle" && `v${CURRENT_VERSION}`}
+                {updateStatus === "checking" && t("dashboard.checking")}
+                {updateStatus === "up-to-date" && t("dashboard.up_to_date")}
+                {updateStatus === "available" && `${t("dashboard.update_available")} (v${latestVersion})`}
+                {updateStatus === "downloading" && (
+                  <div style={{ width: '100%', marginTop: 8 }}>
+                    <div style={{ fontSize: 10, marginBottom: 4 }}>{t("common.loading")} {downloadProgress}%</div>
+                    <div className="stat-bar-track">
+                      <div className="stat-bar-fill" style={{ width: `${downloadProgress}%` }} />
+                    </div>
+                  </div>
+                )}
+                {updateStatus === "installing" && "Installing..."}
+              </div>
+            </div>
+            <div className="quick-card-actions">
+              {updateStatus === "available" ? (
+                <button 
+                  onClick={installUpdate}
+                  className="btn btn-primary btn-sm"
+                  style={{ background: "var(--warning)", color: "black", border: "none" }}
+                >
+                  Update Now
+                </button>
+              ) : (updateStatus === "idle" || updateStatus === "up-to-date") ? (
+                <button 
+                  onClick={checkUpdates}
+                  className="btn btn-secondary btn-sm"
+                >
+                  Check
+                </button>
+              ) : null}
             </div>
           </div>
-          {updateStatus === "available" && (
-             <button 
-              onClick={installUpdate}
-              className="action-btn-primary"
-              style={{ padding: "8px 16px", borderRadius: 8, fontSize: 12, marginLeft: "auto", background: "var(--warning)", color: "black" }}
-            >
-              Update Now
-            </button>
-          )}
-          {(updateStatus === "idle" || updateStatus === "up-to-date") && (
+        </div>
+      </section>
+
+      {/* Secondary Actions / Support */}
+      <section className="dashboard-secondary-grid" style={{ marginTop: 32 }}>
+        <div className="quick-grid">
+          {/* Support Card */}
+          <div className="quick-card support-card">
+            <div className="quick-card-icon support-icon">
+              <Heart size={22} fill="currentColor" />
+            </div>
+            <div className="quick-card-content">
+              <div className="quick-card-title">{t("dashboard.support_title")}</div>
+              <div className="quick-card-desc">
+                {t("dashboard.support_desc")}
+              </div>
+            </div>
             <button 
-              onClick={checkUpdates}
-              className="action-btn-primary"
-              style={{ padding: "8px 12px", borderRadius: 8, fontSize: 11, marginLeft: "auto", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+              onClick={() => openLink("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=segatt22@gmail.com&item_name=Segatt+Tools+Support")}
+              className="btn btn-primary"
+              style={{ 
+                background: "var(--danger)", 
+                boxShadow: "0 4px 20px oklch(65% 0.2 25 / 0.4)",
+                border: "none"
+              }}
             >
-              Check
+              {t("dashboard.donate_btn")}
             </button>
-          )}
-        </div>
-
-        {/* Support Card */}
-        <div className="quick-card" style={{ 
-          background: "linear-gradient(135deg, rgba(231, 76, 60, 0.05) 0%, rgba(192, 57, 43, 0.1) 100%)",
-          border: "1px solid rgba(231, 76, 60, 0.2)"
-        }}>
-          <div className="quick-card-icon" style={{ background: "rgba(231, 76, 60, 0.2)", color: "#e74c3c" }}>
-            <Heart size={20} fill="#e74c3c" />
           </div>
-          <div>
-            <div className="quick-card-title">{t("dashboard.support_title")}</div>
-            <div className="quick-card-desc">
-              {t("dashboard.support_desc")}
+
+          {/* Social Card */}
+          <div className="quick-card glass-panel" style={{ background: "rgba(255,255,255,0.01)" }}>
+            <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.05)", color: "var(--text-muted)" }}>
+              <ExternalLink size={22} />
             </div>
-          </div>
-          <button 
-            onClick={() => openLink("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=segatt22@gmail.com&item_name=Segatt+Tools+Support")}
-            className="action-btn-primary"
-            style={{ 
-              background: "#e74c3c", 
-              boxShadow: "0 4px 12px rgba(231, 76, 60, 0.3)",
-              fontSize: 12,
-              padding: "8px 16px"
-            }}
-          >
-            {t("dashboard.donate_btn")}
-          </button>
-        </div>
-
-        {/* Connect Section */}
-        <div className="quick-card" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <div className="quick-card-icon" style={{ background: "rgba(100,100,100,0.1)", color: "var(--text-muted)" }}>
-            <ExternalLink size={20} />
-          </div>
-          <div>
-            <div className="quick-card-title">{t("dashboard.socials_title")}</div>
-            <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-              <button 
-                onClick={() => openLink("https://github.com/joshsegatt")}
-                title={t("dashboard.github")}
-                className="social-icon-btn"
-              >
-                <Github size={18} />
-              </button>
-              <button 
-                onClick={() => openLink("https://www.instagram.com/josh_segatt")}
-                title={t("dashboard.instagram")}
-                className="social-icon-btn"
-              >
-                <Instagram size={18} />
-              </button>
-              <button 
-                onClick={() => openLink("https://www.linkedin.com/in/josh-segat-522760102/?locale=en")}
-                title={t("dashboard.linkedin")}
-                className="social-icon-btn"
-              >
-                <Linkedin size={18} />
-              </button>
+            <div className="quick-card-content">
+              <div className="quick-card-title">{t("dashboard.socials_title")}</div>
+              <div className="social-links" style={{ display: "flex", gap: 16, marginTop: 12 }}>
+                <button onClick={() => openLink("https://github.com/joshsegatt")} className="btn-ghost btn-icon">
+                  <Github size={20} />
+                </button>
+                <button onClick={() => openLink("https://www.instagram.com/josh_segatt")} className="btn-ghost btn-icon">
+                  <Instagram size={20} />
+                </button>
+                <button onClick={() => openLink("https://www.linkedin.com/in/josh-segat-522760102/?locale=en")} className="btn-ghost btn-icon">
+                  <Linkedin size={20} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <style jsx>{`
+        .elite-dashboard {
+          padding: 24px;
+          max-width: 1200px;
+          width: 100%;
+        }
+
+        .dashboard-header {
+          margin-bottom: 32px;
+        }
+
+        .dashboard-title {
+          font-family: var(--font-display);
+          font-size: 32px;
+          font-weight: 900;
+          color: var(--text-primary);
+          letter-spacing: -1px;
+        }
+
+        .dashboard-subtitle {
+          font-size: 14px;
+          color: var(--text-secondary);
+          margin-top: 4px;
+        }
+
+        .grid-label {
+          font-size: 11px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: var(--text-muted);
+          margin-bottom: 20px;
+        }
+
+        .quick-card-content {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .quick-card-footer {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          font-weight: 700;
+          color: var(--accent);
+          opacity: 0.8;
+          transition: opacity 0.2s;
+        }
+
+        .quick-card:hover .quick-card-footer {
+          opacity: 1;
+        }
+
+        .support-card {
+           background: linear-gradient(135deg, oklch(65% 0.2 25 / 0.1), transparent 80%);
+           border-color: oklch(65% 0.2 25 / 0.3);
+        }
+
+        .support-icon {
+          background: oklch(65% 0.2 25 / 0.2);
+          color: var(--danger);
+          border-color: oklch(65% 0.2 25 / 0.4);
+        }
+
+        .text-accent { color: var(--accent); }
+        .text-success { color: var(--success); }
+      `}</style>
     </div>
   );
 }

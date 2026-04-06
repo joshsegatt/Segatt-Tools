@@ -60,6 +60,8 @@ const TweakRow = ({ tweak, isSelected, onToggle }: TweakRowProps) => (
   </div>
 );
 
+import { PageHeader } from "@/components/ui/PageHeader";
+
 // ─── Main Page ───────────────────────────────────────────────
 export default function TweaksPage() {
   const { t } = useLanguage();
@@ -107,9 +109,9 @@ export default function TweaksPage() {
   ];
 
   const PRESETS = [
-    { key: "essential", label: "⚡ Essential",  desc: "Safe, recommended changes" },
-    { key: "privacy",   label: "🛡 Privacy",    desc: "Maximum privacy" },
-    { key: "gaming",    label: "🎮 Gaming",     desc: "Optimize for FPS" },
+    { key: "essential", label: "Essential",  icon: "⚡", desc: "Safe, recommended changes" },
+    { key: "privacy",   label: "Privacy",    icon: "🛡", desc: "Maximum privacy" },
+    { key: "gaming",    label: "Gaming",     icon: "🎮", desc: "Optimize for FPS" },
   ] as const;
 
   useEffect(() => {
@@ -154,7 +156,7 @@ export default function TweaksPage() {
       catch (e) { console.error(`Tweak ${id} failed:`, e); }
     }
     setIsApplying(false);
-    setNotification({ type: "success", msg: `${ok} tweak(s) applied.` });
+    setNotification({ type: "success", msg: `${ok} tweak applied.` });
     setSelected(new Set());
   };
 
@@ -170,83 +172,57 @@ export default function TweaksPage() {
 
   return (
     <div className="checklist-page fade-in">
-      {/* Admin warning */}
+      <PageHeader 
+        title={t("tabs.tweaks")} 
+        description={t("tweaks.description") || "Optimize Windows settings for performance and privacy."}
+      >
+        <div className="action-bar-elite">
+          <button className="btn btn-ghost btn-sm" onClick={() => setSelected(new Set(TWEAKS.map(t => t.id)))}>
+            <CheckCheck size={14} />
+          </button>
+          
+          <div className="topbar-divider" />
+
+          <button className="btn btn-secondary btn-sm" onClick={createRestorePoint}>
+            <RotateCcw size={14} />
+          </button>
+
+          <button
+            className="btn btn-primary"
+            onClick={applySelected}
+            disabled={selected.size === 0 || isApplying}
+          >
+            {isApplying ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <>
+                <Play size={14} />
+                {selected.size > 0 && <span className="badge-count-elite">{selected.size}</span>}
+              </>
+            )}
+          </button>
+        </div>
+      </PageHeader>
+
       {isAdmin === false && (
-        <div className="admin-banner">
+        <div className="admin-banner glass-panel" style={{ marginBottom: 24, borderRadius: 'var(--r-md)' }}>
           <ShieldAlert size={14} />
           <span>{t("dashboard.admin_warn")}</span>
         </div>
       )}
 
-      {/* Preset strip */}
       <div className="preset-strip">
-        <button
-          className="preset-btn"
-          onClick={openSystemRestore}
-          style={{ background: "rgba(255,193,7,0.1)", color: "var(--warning)", border: "1px solid rgba(255,193,7,0.2)" }}
-        >
+        <button className="preset-btn preset-btn-warning" onClick={openSystemRestore}>
           <LifeBuoy size={14} /> {t("tweaks.restore_btn")}
         </button>
-
-        <div className="topbar-divider" style={{ width: 1, height: 24, margin: "0 8px" }} />
-
         {PRESETS.map((p) => (
-          <button
-            key={p.key}
-            className="preset-btn"
-            onClick={() => applyPreset(p.key)}
-            title={p.desc}
-          >
-            {p.label}
+          <button key={p.key} className="preset-btn" onClick={() => applyPreset(p.key)}>
+            {p.icon} {p.label}
           </button>
         ))}
       </div>
 
-      {/* Action bar */}
-      <div className="action-bar">
-        <div className="action-bar-section">
-          <button
-            className="btn btn-ghost btn-sm"
-            onClick={() => setSelected(new Set(TWEAKS.map((t) => t.id)))}
-          >
-            <CheckCheck size={13} /> Select All
-          </button>
-          {selected.size > 0 && (
-            <button className="btn btn-ghost btn-sm" onClick={() => setSelected(new Set())}>
-              <X size={13} /> Clear
-            </button>
-          )}
-        </div>
-
-        <div className="action-bar-spacer" />
-
-        <button
-          className="btn btn-secondary btn-sm"
-          onClick={createRestorePoint}
-          title="Create a restore point before applying"
-        >
-          <RotateCcw size={13} /> {t("tweaks.create_point")}
-        </button>
-
-        <button
-          className="btn btn-primary"
-          onClick={applySelected}
-          disabled={selected.size === 0 || isApplying}
-        >
-          {isApplying ? (
-            <><Loader2 size={14} className="animate-spin" /> ...</>
-          ) : (
-            <>
-              <Play size={14} />
-              {t("tweaks.apply_btn")}
-              {selected.size > 0 && <span className="badge-count">{selected.size}</span>}
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Two-column checklist grid */}
-      <div className="checklist-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+      <div className="checklist-grid">
         {COLUMNS.map(({ key, label, icon: Icon }) => {
           const tweaks = TWEAKS.filter((t) => t.column === key);
           const colSelected = tweaks.filter((t) => selected.has(t.id)).length;
@@ -258,7 +234,7 @@ export default function TweaksPage() {
                   <Icon size={13} />
                   {label}
                 </div>
-                {colSelected > 0 && <span className="badge-count">{colSelected}</span>}
+                {colSelected > 0 && <span className="badge-count-elite">{colSelected}</span>}
               </div>
 
               {tweaks.map((tweak) => (
@@ -274,10 +250,8 @@ export default function TweaksPage() {
         })}
       </div>
 
-      {/* Notification */}
       {notification && (
-        <div className={`toast toast-${notification.type} fade-in`}>
-          {notification.type === "success" ? "✓" : notification.type === "error" ? "✕" : "ℹ"}
+        <div className={`toast toast-${notification.type} glass-panel fade-in`}>
           <span>{notification.msg}</span>
         </div>
       )}

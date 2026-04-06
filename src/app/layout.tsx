@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { TopBar } from "@/features/navigation/components/TopBar";
+import { Sidebar } from "@/features/navigation/components/Sidebar";
 import { LanguageProvider } from "@/hooks/useLanguage";
 
 export const metadata: Metadata = {
@@ -15,11 +15,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="elite-theme">
         <LanguageProvider>
-          <div className="app-shell">
-            <TopBar />
-            <main className="content-area">
+          <div className="app-shell-elite">
+            {/* Background Layers */}
+            <div className="bg-mesh" />
+            <div className="bg-glow bg-glow-primary" />
+            <div className="bg-glow bg-glow-secondary" />
+            
+            <Sidebar />
+            
+            <main className="content-area-elite">
               {children}
             </main>
           </div>

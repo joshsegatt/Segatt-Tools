@@ -6,6 +6,7 @@ export interface AppEntry {
   name: string;         // Display name
   description: string;  // Short description (for tooltip)
   website?: string;
+  foss?: boolean;       // Free and Open Source Software
 }
 
 export interface AppCategory {
@@ -22,12 +23,12 @@ export const APP_CATEGORIES: AppCategory[] = [
     icon: "Globe",
     apps: [
       { id: "Google.Chrome",          name: "Google Chrome",    description: "Fast and secure web browser" },
-      { id: "Mozilla.Firefox",        name: "Firefox",          description: "Privacy-focused open-source" },
-      { id: "Brave.Brave",            name: "Brave",            description: "Chromium-based with ad blocking" },
+      { id: "Mozilla.Firefox",        name: "Firefox",          description: "Privacy-focused open-source", foss: true },
+      { id: "Brave.Brave",            name: "Brave",            description: "Chromium-based with ad blocking", foss: true },
       { id: "Microsoft.Edge",         name: "Edge",             description: "Microsoft's integrated browser" },
       { id: "Opera.OperaGX",          name: "Opera GX",         description: "The gaming browser" },
       { id: "Vivaldi.Vivaldi",        name: "Vivaldi",          description: "Highly customizable power browser" },
-      { id: "LibreWolf.LibreWolf",    name: "LibreWolf",        description: "Privacy-hardened Firefox fork" },
+      { id: "LibreWolf.LibreWolf",    name: "LibreWolf",        description: "Privacy-hardened Firefox fork", foss: true },
       { id: "TheBrowserCompany.Arc",  name: "Arc Browser",      description: "Modern, workspace-focused browser" },
       { id: "Ablaze.Floorp",          name: "Floorp",           description: "Customizable and fast Firefox derivative" },
       { id: "Alex313031.Thorium",     name: "Thorium",          description: "Optimized Chromium browser" },
@@ -69,12 +70,12 @@ export const APP_CATEGORIES: AppCategory[] = [
     label: "Media",
     icon: "Music",
     apps: [
-      { id: "VideoLAN.VLC",              name: "VLC",          description: "Best open-source player" },
+      { id: "VideoLAN.VLC",              name: "VLC",          description: "Best open-source player", foss: true },
       { id: "Spotify.Spotify",           name: "Spotify",      description: "Music & podcast streaming" },
-      { id: "OBSProject.OBSStudio",      name: "OBS Studio",   description: "Recording and streaming" },
-      { id: "GIMP.GIMP",                 name: "GIMP",         description: "Pro image editor" },
-      { id: "Blender.Blender",           name: "Blender",      description: "3D creation suite" },
-      { id: "HandBrake.HandBrake",       name: "HandBrake",    description: "Video transcoder" },
+      { id: "OBSProject.OBSStudio",      name: "OBS Studio",   description: "Recording and streaming", foss: true },
+      { id: "GIMP.GIMP",                 name: "GIMP",         description: "Pro image editor", foss: true },
+      { id: "Blender.Blender",           name: "Blender",      description: "3D creation suite", foss: true },
+      { id: "HandBrake.HandBrake",       name: "HandBrake",    description: "Video transcoder", foss: true },
       { id: "Streamlabs.StreamlabsDesktop", name: "Streamlabs",  description: "All-in-one streaming app" },
     ],
   },
@@ -85,12 +86,12 @@ export const APP_CATEGORIES: AppCategory[] = [
     apps: [
       { id: "Microsoft.PowerToys",           name: "PowerToys",         description: "System tools for power users" },
       { id: "Notepad++.Notepad++",           name: "Notepad++",         description: "Extensible text editor" },
-      { id: "7zip.7zip",                     name: "7-Zip",             description: "High compression archiver" },
+      { id: "7zip.7zip",                     name: "7-Zip",             description: "High compression archiver", foss: true },
       { id: "RevoUninstaller.RevoUninstaller",name: "Revo Uninstaller", description: "Force clean uninstaller" },
       { id: "voidtools.Everything",          name: "Everything",        description: "Instant file search" },
-      { id: "Bitwarden.Bitwarden",           name: "Bitwarden",        description: "Open-source password manager" },
-      { id: "Akeo.Rufus",                    name: "Rufus",            description: "Create bootable USB drives" },
-      { id: "BleachBit.BleachBit",           name: "BleachBit",        description: "Privacy cleaner" },
+      { id: "Bitwarden.Bitwarden",           name: "Bitwarden",        description: "Open-source password manager", foss: true },
+      { id: "Akeo.Rufus",                    name: "Rufus",            description: "Create bootable USB drives", foss: true },
+      { id: "BleachBit.BleachBit",           name: "BleachBit",        description: "Privacy cleaner", foss: true },
     ],
   },
 ];
