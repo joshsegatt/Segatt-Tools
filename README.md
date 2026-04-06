@@ -80,6 +80,6 @@ npm run tauri build
 ---
 
 <div align="center">
-Desenvolvido por <b>Segatt Soft</b> em parceria com <b>Antigravity AI Team</b>.<br>
+Desenvolvido por <b>Segatt Soft</b>
 <i>Build with Authority. Optimized for Elite Performance.</i>
 </div>
