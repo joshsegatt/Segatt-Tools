@@ -1,16 +1,52 @@
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/joshsegatt/Segatt-Tools/main/assets/hero_banner.png" alt="Segatt Tools Hero" width="100%">
+
 # 🪐 Segatt Tools — Elite Windows System Utility
+*Unleash the full potential of your system with surgical precision and premium design.*
 
-[![GitHub Release](https://img.shields.io/github/v/release/joshsegatt/Segatt-Tools?style=for-the-badge&color=2eb67d)](https://github.com/joshsegatt/Segatt-Tools/releases)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/joshsegatt/Segatt-Tools/build.yml?style=for-the-badge&label=Build)](https://github.com/joshsegatt/Segatt-Tools)
-[![Direct Install](https://img.shields.io/badge/Install-PowerShell-blue?style=for-the-badge&logo=powershell)](https://github.com/joshsegatt/Segatt-Tools#-instalação-rápida)
+[![Latest Release](https://img.shields.io/github/v/release/joshsegatt/Segatt-Tools?style=for-the-badge&color=00FF9D&labelColor=1A1A1A)](https://github.com/joshsegatt/Segatt-Tools/releases/tag/v1.5.5)
+[![Downloads](https://img.shields.io/github/downloads/joshsegatt/Segatt-Tools/total?style=for-the-badge&color=00FF9D&labelColor=1A1A1A)](https://github.com/joshsegatt/Segatt-Tools/releases)
+[![Security](https://img.shields.io/badge/Security-Ed25519-00FF9D?style=for-the-badge&labelColor=1A1A1A)](https://github.com/joshsegatt/Segatt-Tools#%EF%B8%8F-seguran%C3%A7a-e-integridade)
 
-O **Segatt Tools** é uma suite de utilitários premium construída com o estado da arte das tecnologias modernas (**Tauri v2**, **Next.js 15** e **Rust**). Projetado para ser a versão definitiva em performance e estética para o gerenciamento de sistemas Windows.
+[**Download v1.5.5 (MSI)**](https://github.com/joshsegatt/Segatt-Tools/releases/download/v1.5.5/Segatt.Tools_1.5.5_x64_en-US.msi) • [**Download v1.5.5 (EXE)**](https://github.com/joshsegatt/Segatt-Tools/releases/download/v1.5.5/Segatt.Tools_1.5.5_x64-setup.exe) • [**Documentation**](https://github.com/joshsegatt/Segatt-Tools/wiki)
+
+</div>
 
 ---
 
-### 🚀 Instalação Rápida (One-Liner)
+### 🇧🇷 A Experiência Definitiva em Manutenção Windows
+O **Segatt Tools** não é apenas um script; é uma suite de utilitários de elite construída com **Tauri v2** e **Next.js 15**. Projetado para usuários que exigem performance máxima, privacidade absoluta e uma interface inspirada nos mais altos padrões de design (Figma-grade).
 
-Copie e cole este comando no seu **PowerShell (Admin)** para instalar o Segatt Tools instantaneamente:
+### 🇺🇸 The Ultimate Windows Maintenance Experience
+**Segatt Tools** is more than a script; it's an elite utility suite built with **Tauri v2** and **Next.js 15**. Designed for users who demand peak performance, absolute privacy, and an interface inspired by the highest design standards (Figma-grade).
+
+---
+
+## 💎 Motores de Elite | Elite Engines
+
+### 🧠 Inteligência Neural (Local AI)
+Utilize o poder das IAs modernas sem comprometer sua privacidade. O Segatt Tools integra modelos **Llama 3** rodando localmente via **WebGPU** para diagnósticos de hardware em tempo real.
+*Local AI power via WebGPU for real-time hardware diagnostics. Private and secure.*
+
+### 📦 Gestão de Pacotes Pro (WinGet Integration)
+A interface mais rápida e bonita para o WinGet. Instale, atualize e remova softwares com logs em tempo real e visualização premium.
+*The fastest and most beautiful WinGet UI. Professional package management with real-time feedback.*
+
+### 🧪 Otimização Extrema (Deep Cleaner & Tweaks)
+Remoção profunda de arquivos inúteis (Windows.old, Prefetch, Lixeira) e ajustes de sistema de baixo nível para reduzir latência e aumentar o FPS.
+*Deep file removal (Windows.old, Prefetch) and low-level system tweaks to reduce latency and boost FPS.*
+
+### 🔄 Auto-Update Nativo (Secure Updates)
+Mantenha-se sempre na frente. O Segatt Tools v1.5.5 inclui um motor de atualização automática assinado criptograficamente com **Ed25519**.
+*Stay ahead with cryptographically signed automatic updates (Ed25519).*
+
+---
+
+## 🚀 Instalação Rápida | Quick Install
+
+> [!TIP]
+> Para uma instalação de autoridade em apenas um passo, utilize nosso script oficial via PowerShell (Admin):
 
 ```powershell
 iex (irm https://raw.githubusercontent.com/joshsegatt/Segatt-Tools/main/install.ps1)
@@ -18,46 +54,32 @@ iex (irm https://raw.githubusercontent.com/joshsegatt/Segatt-Tools/main/install.
 
 ---
 
-## 💎 Diferenciais Elite
+## 🛡️ Segurança e Integridade | Safety and Integrity
 
-Diferente de scripts genéricos, o Segatt Tools foca em **segurança, estética "Figma-grade" e performance nativa**.
+> [!IMPORTANT]
+> **Privacidade Absoluta:** O Segatt Tools opera 100% offline para todas as funções críticas (AI, Tweaks, Limpeza). Zero telemetria. Zero rastreio.
+> **Assinaturas Digitais:** Todos os binários do v1.5+ são assinados com chaves Ed25519. Verifique os arquivos `.sig` nos releases.
 
-| Feature | Descrição | Tecnologia |
-| :--- | :--- | :--- |
-| **Streaming UI** | Logs do WinGet em tempo real com interface interativa. | Tauri Event Bus |
-| **Tweak Engine** | Otimizações profundas com backups automáticos. | Windows API (Rust) |
-| **Local AI Assist** | Diagnóstico de hardware por inteligência artificial local. | Llama 3 / Sidecar |
-| **Zero Telemetry** | Privacidade absoluta. Nada sai da sua máquina. | Local-Only Processing |
+---
 
-## 🛠️ Arquitetura de Produção
+<details>
+<summary>🛠️ Desenvolvimento e Compilação | Developer Info</summary>
 
-O projeto utiliza um design system baseado em **Glassmorphism** e **Fluid Typography**, garantindo que a aplicação pareça nativa no Windows 11 enquanto mantém uma identidade visual única e moderna.
-
-### Estrutura do Projeto
-- **`src-tauri/`**: Núcleo de alta performance em Rust para interações com o Win32 API.
-- **`src/features/`**: Componentização modular seguindo padrões da Vercel/Linear.
-- **`src/app/`**: Roteamento otimizado com Next.js App Router.
-
-## 🏗️ Desenvolvimento
-
-Se você deseja contribuir ou compilar manualmente:
+Se você é um desenvolvedor e deseja contribuir com o motor Rust ou a UI em Next.js:
 
 ```bash
-# 1. Instalar dependências
+# Instalar dependências
 npm install
 
-# 2. Iniciar ambiente de desenvolvimento
+# Build / Dev
 npm run tauri dev
-
-# 3. Gerar build de produção
 npm run tauri build
 ```
+</details>
 
 ---
 
-## 🛡️ Segurança e Integridade
-
-Todas as alterações de sistema realizadas pelo Segatt Tools são auditáveis e o código é 100% aberto. Recomendamos a criação de um ponto de restauração antes de aplicar Tweaks agressivos (funcionalidade integrada).
-
----
-*Desenvolvido com ❤️ por Segatt Soft & Google DeepMind Team.*
+<div align="center">
+Desenvolvido por <b>Segatt Soft</b> em parceria com <b>Antigravity AI Team</b>.<br>
+<i>Build with Authority. Optimized for Elite Performance.</i>
+</div>
