@@ -1,6 +1,5 @@
 use tauri::{AppHandle, Emitter};
-use std::process::{Command, Stdio};
-use std::io::{BufReader, BufRead};
+use std::process::Command;
 use serde::{Serialize, Deserialize};
 
 /// Suppresses the CMD/PowerShell console window on Windows.
@@ -67,32 +66,19 @@ pub async fn search_packages(query: String) -> Result<Vec<PackageInfo>, String> 
 
 #[tauri::command]
 pub async fn install_package_stream(app: AppHandle, package_id: String) -> Result<(), String> {
-    // All child processes spawned by winget also inherit CREATE_NO_WINDOW,
-    // so no flash will occur during installation.
-    let mut child = silent_cmd("winget")
-        .args(&[
-            "install",
-            &package_id,
-            "--accept-source-agreements",
-            "--accept-package-agreements",
-            "--silent",
-        ])
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .map_err(|e| format!("Failed to start install: {}", e))?;
+    // Notify the UI that the installation has started
+    let _ = app.emit("winget-output", format!("Spawning Installer for: {}", package_id));
 
-    let stdout = child.stdout.take().ok_or("Failed to capture WinGet stdout")?;
-    let reader = BufReader::new(stdout);
+    let script = format!("winget install {} --accept-source-agreements --accept-package-agreements", package_id);
+    let task_name = format!("Installing {}", package_id);
 
-    tauri::async_runtime::spawn(async move {
-        for line in reader.lines() {
-            if let Ok(line) = line {
-                let _ = app.emit("winget-output", line);
-            }
-        }
+    let status = crate::features::utils::spawn_visible_powershell(&task_name, &script)
+        .map_err(|e| format!("Failed to spawn PowerShell: {}", e))?;
+
+    if status.success() {
         let _ = app.emit("winget-output", format!("✓ Done: {}", package_id));
-    });
-
-    Ok(())
+        Ok(())
+    } else {
+        Err(format!("Installation failed or was cancelled by user."))
+    }
 }

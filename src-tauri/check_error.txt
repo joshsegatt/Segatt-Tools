@@ -1,0 +1,11 @@
+    Checking app v1.7.7 (C:\Users\josue\Desktop\Segatt tools\src-tauri)
+warning: unused import: `std::process::Command`
+ --> src\features\cleaner.rs:1:5
+  |
+1 | use std::process::Command;
+  |     ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `app` (lib) generated 1 warning (run `cargo fix --lib -p app` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.29s

@@ -1,16 +1,6 @@
 use std::process::Command;
 use serde::{Serialize, Deserialize};
 
-/// Re-using silent_cmd pattern for consistency.
-fn silent_cmd(program: &str) -> Command {
-    let mut cmd = Command::new(program);
-    #[cfg(target_os = "windows")]
-    {
-        use std::os::windows::process::CommandExt;
-        cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
-    }
-    cmd
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CleanupResult {
@@ -25,7 +15,7 @@ pub async fn run_cleanup(id: String) -> Result<CleanupResult, String> {
     
     // Execute in a blocking thread to avoid freezing the UI bridge
     let result = tauri::async_runtime::spawn_blocking(move || {
-        match id.as_str() {
+        let status = match id.as_str() {
             // ── Temp Files ───────────────────────────────────────────────────────
             "clean_temp" => {
                 let script = "
@@ -36,21 +26,17 @@ pub async fn run_cleanup(id: String) -> Result<CleanupResult, String> {
                         }
                     }
                 ";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Temp Files", script)
             },
 
             // ── Optimization ─────────────────────────────────────────────────────
             "clean_prefetch" => {
                 let script = "Remove-Item -Path 'C:\\Windows\\Prefetch\\*' -Force -ErrorAction SilentlyContinue";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Prefetch", script)
             },
 
             "flush_dns" => {
-                silent_cmd("ipconfig").arg("/flushdns").status()
+                crate::features::utils::spawn_visible_powershell("Flush DNS", "ipconfig /flushdns")
             },
 
             "clean_windows_update" => {
@@ -59,9 +45,7 @@ pub async fn run_cleanup(id: String) -> Result<CleanupResult, String> {
                     Remove-Item -Path 'C:\\Windows\\SoftwareDistribution\\Download\\*' -Force -Recurse -ErrorAction SilentlyContinue
                     Start-Service -Name wuauserv -ErrorAction SilentlyContinue
                 ";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Windows Update Download Cache", script)
             },
 
             // ── Gaming ───────────────────────────────────────────────────────────
@@ -72,24 +56,18 @@ pub async fn run_cleanup(id: String) -> Result<CleanupResult, String> {
                     $dxPath = \"$env:LOCALAPPDATA\\Microsoft\\DirectX Shader Cache\"
                     if (Test-Path $dxPath) { Remove-Item -Path \"$dxPath\\*\" -Force -Recurse -ErrorAction SilentlyContinue }
                 ";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Shader Cache", script)
             },
 
             // ── Elite System Cleaning ────────────────────────────────────────────
             "clean_recycle_bin" => {
                 let script = "Clear-RecycleBin -Force -ErrorAction SilentlyContinue";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Recycle Bin", script)
             },
 
             "clean_windows_old" => {
                 let script = "if (Test-Path 'C:\\Windows.old') { Remove-Item -Path 'C:\\Windows.old' -Force -Recurse -ErrorAction SilentlyContinue }";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Windows.old", script)
             },
 
             "clean_delivery_optimization" => {
@@ -98,16 +76,12 @@ pub async fn run_cleanup(id: String) -> Result<CleanupResult, String> {
                     Remove-Item -Path 'C:\\Windows\\ServiceProfiles\\NetworkService\\AppData\\Local\\Microsoft\\Windows\\DeliveryOptimization\\Cache\\*' -Force -Recurse -ErrorAction SilentlyContinue
                     Start-Service -Name DoSvc -ErrorAction SilentlyContinue
                 ";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Delivery Optimization Cache", script)
             },
 
             "clean_thumbnails" => {
                 let script = "Get-ChildItem -Path \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Explorer\" -Filter thumbcache_*.db | Remove-Item -Force -ErrorAction SilentlyContinue";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Thumbnail Cache", script)
             },
 
             "clean_logs_minidumps" => {
@@ -115,14 +89,14 @@ pub async fn run_cleanup(id: String) -> Result<CleanupResult, String> {
                     Get-ChildItem -Path 'C:\\Windows' -Filter *.log -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
                     if (Test-Path 'C:\\Windows\\Minidump') { Get-ChildItem -Path 'C:\\Windows\\Minidump' -Filter *.dmp | Remove-Item -Force -ErrorAction SilentlyContinue }
                 ";
-                silent_cmd("powershell")
-                    .args(&["-NoProfile", "-NonInteractive", "-Command", script])
-                    .status()
+                crate::features::utils::spawn_visible_powershell("Clean Logs & Minidumps", script)
             },
 
             _ => return Err(format!("Unknown cleanup task: '{}'", id)),
         }
-        .map_err(|e| format!("Failed to execute task: {}", e))
+        .map_err(|e| format!("Failed to execute task: {}", e));
+
+        status
     }).await.map_err(|e| format!("Runtime error: {}", e))?;
 
     match result {

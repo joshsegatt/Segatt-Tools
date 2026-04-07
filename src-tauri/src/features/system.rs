@@ -2,10 +2,7 @@ use sysinfo::{System, CpuRefreshKind, MemoryRefreshKind};
 use serde::Serialize;
 use std::sync::Mutex;
 use tauri::{State, Window, Emitter};
-use std::process::{Command, Stdio};
-use std::io::{BufRead, BufReader};
-use std::os::windows::process::CommandExt;
-
+use std::process::Command;
 #[derive(Serialize)]
 pub struct SystemStats {
     pub cpu_usage: f32,
@@ -55,32 +52,21 @@ pub fn open_legacy_panel(panel: String) -> Result<(), String> {
 
 #[tauri::command]
 pub fn run_system_fix(window: Window, id: String) -> Result<(), String> {
-    let cmd_str = match id.as_str() {
-        "sfc" => "sfc /scannow",
-        "dism" => "DISM /Online /Cleanup-Image /RestoreHealth",
+    let (task_name, cmd_str) = match id.as_str() {
+        "sfc" => ("System File Checker (SFC)", "sfc /scannow"),
+        "dism" => ("Deployment Image Servicing (DISM)", "DISM /Online /Cleanup-Image /RestoreHealth"),
         _ => return Err("Unknown fix ID".to_string()),
     };
 
-    let mut child = Command::new("powershell")
-        .args(["-Command", cmd_str])
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
-        .spawn()
+    let _ = window.emit("system-fix-log", format!("Spawning Installer for: {}", task_name));
+
+    let status = crate::features::utils::spawn_visible_powershell(task_name, cmd_str)
         .map_err(|e| e.to_string())?;
 
-    let stdout = child.stdout.take().unwrap();
-    let reader = BufReader::new(stdout);
-
-    // Stream logs in a separate thread
-    std::thread::spawn(move || {
-        for line in reader.lines() {
-            if let Ok(content) = line {
-                let _ = window.emit("system-fix-log", content);
-            }
-        }
-        let _ = window.emit("system-fix-log", "--- OPERAÇÃO CONCLUÍDA ---".to_string());
-    });
-
-    Ok(())
+    if status.success() {
+        let _ = window.emit("system-fix-log", format!("✓ Done: {}", task_name));
+        Ok(())
+    } else {
+        Err(format!("System fix failed or was cancelled."))
+    }
 }

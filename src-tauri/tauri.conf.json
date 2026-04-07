@@ -1,6 +1,6 @@
 {
   "productName": "Segatt Tools",
-  "version": "1.7.7",
+  "version": "1.7.8",
   "identifier": "com.segatt.tools",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "Segatt Tools v1.7.5 — RE-ELITE System",
+        "title": "Segatt Tools v1.7.8 — RE-ELITE System",
         "width": 1200,
         "height": 800,
         "resizable": true,
