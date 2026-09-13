@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Private keys and build artifacts
+src-tauri/tauri-privkey.key
+src-tauri/tauri-privkey.key.pub
+build_log.txt
+src-tauri/check_error.txt
+src-tauri/sig_exe.txt
+src-tauri/sig_exe_v1_5_5.txt
+src-tauri/sig_msi.txt
+src-tauri/sig_msi_v1_5_5.txt
+rustup-init.exe
