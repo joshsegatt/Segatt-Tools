@@ -1,71 +1,53 @@
-<div align="center">
+# Segatt Tools
 
-# 🛠️ Segatt Tools
+Native Windows maintenance suite. Local AI. Zero telemetry.
 
-**Native Windows maintenance suite — zero telemetry, zero cloud.**
+[Download](https://github.com/joshsegatt/Segatt-Tools/releases/latest) · [MIT license](LICENSE)
 
-[![GitHub release](https://img.shields.io/github/v/release/joshsegatt/Segatt-Tools?style=flat-square)](https://github.com/joshsegatt/Segatt-Tools/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Built with Tauri](https://img.shields.io/badge/Built%20with-Tauri-FFC131?style=flat-square&logo=tauri)](https://tauri.app)
-[![Rust](https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust)](https://www.rust-lang.org)
-[![Platform: Windows](https://img.shields.io/badge/Platform-Windows-0078d4?style=flat-square&logo=windows)](https://github.com/joshsegatt/Segatt-Tools/releases)
+A Tauri + Rust + Next.js desktop app that cleans the machine, manages startup, and updates software with winget — without sending data off the device. On-device suggestions run through WebLLM, not an API.
 
-> A fast, lightweight desktop app built with **Tauri + Rust + Next.js** to keep your Windows machine clean, healthy, and running at peak performance — without sending a single byte to the cloud.
+## Features
 
-</div>
+| | |
+| --- | --- |
+| System cleaner | Temp files, browser cache, Windows Update leftovers |
+| Startup manager | See what launches with Windows and turn it off |
+| Winget updater | Batch-upgrade installed apps |
+| Local AI | On-device suggestions via WebLLM. No cloud calls |
+| Health panel | CPU, RAM, and disk at a glance |
+| Privacy | No telemetry, no account, no phone-home |
 
----
+## Stack
 
-## ✨ Features
+- Desktop — Tauri 2, Rust
+- UI — Next.js 16, React 19, TypeScript
+- Local model — `@mlc-ai/web-llm`
 
-| Feature | Description |
-|---|---|
-| 🧹 **System Cleaner** | Remove temp files, browser cache, Windows Update residuals |
-| 🚀 **Startup Manager** | Audit and disable slow startup programs |
-| 📦 **Winget Updater** | Batch-update all installed software via `winget upgrade --all` |
-| 🤖 **Local AI Assistant** | On-device AI suggestions (no API calls, 100% local) |
-| 📊 **System Health** | CPU / RAM / Disk usage at a glance |
-| 🔒 **Privacy First** | Zero telemetry. Zero cloud. Your data stays on your machine. |
+## Install
 
----
+**Release build (recommended)**
 
-## 📥 Installation
+1. Get the `.msi` or `.exe` from [Releases](https://github.com/joshsegatt/Segatt-Tools/releases/latest).
+2. Windows SmartScreen may warn on a new publisher — *More info → Run anyway*.
+3. Open **Segatt Tools** from the Start menu.
 
-### Option 1 — Installer (recommended)
-
-1. Download the latest `.msi` or `.exe` from [Releases](https://github.com/joshsegatt/Segatt-Tools/releases)
-2. Run the installer — Windows may show a SmartScreen prompt (click **More info → Run anyway**)
-3. Launch **Segatt Tools** from the Start Menu
-
-### Option 2 — Build from source
+**From source**
 
 ```bash
-# Prerequisites: Node.js 18+, Rust (stable), Tauri CLI
+# Node 18+, Rust stable, Tauri CLI
 git clone https://github.com/joshsegatt/Segatt-Tools.git
 cd Segatt-Tools
 npm install
 npm run tauri build
 ```
 
----
-
-## 🔒 Security Note
-
-This repository uses **Tauri's built-in code signing**. Signing keys are **never committed** to this repository. If you are building from source, you will need to supply your own Tauri signing keypair via environment variables:
+Signing keys are not in this repo. For a signed local build set:
 
 ```
-TAURI_SIGNING_PRIVATE_KEY=<your key>
-TAURI_SIGNING_PRIVATE_KEY_PASSWORD=<your password>
+TAURI_SIGNING_PRIVATE_KEY=
+TAURI_SIGNING_PRIVATE_KEY_PASSWORD=
 ```
 
----
+## License
 
-## 🤝 Contributing
-
-Pull requests are welcome. For major changes, open an issue first to discuss what you would like to change.
-
----
-
-## 📄 License
-
-[MIT](LICENSE) © 2026 Josh Segatt
+[MIT](LICENSE) © Josh Segatt
